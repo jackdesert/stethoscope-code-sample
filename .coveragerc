@@ -1,0 +1,3 @@
+[run]
+source = stethoscope
+omit = stethoscope/test*
