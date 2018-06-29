@@ -4,6 +4,10 @@ from pyramid.view import view_config
 from sqlalchemy.exc import DBAPIError
 
 from ..models import MyModel
+from ..models import RssiReading
+
+import pdb
+import json
 
 
 @view_config(route_name='home', renderer='../templates/mytemplate.jinja2')
@@ -14,6 +18,21 @@ def my_view(request):
     except DBAPIError:
         return Response(db_err_msg, content_type='text/plain', status=500)
     return {'one': one, 'project': 'stethoscope'}
+
+
+@view_config(route_name='create_rssi_reading',
+             renderer='json',
+             request_method='POST')
+def haberdasher(request):
+    params = json.loads(request.body)
+    reading = RssiReading()
+    reading.name = params.get('name')
+    reading.value = params.get('value')
+    try:
+        request.dbsession.add(reading)
+    except DBAPIError:
+        return Response(db_err_msg, content_type='text/plain', status=500)
+    return { 'name': reading.name, 'value': reading.value }
 
 
 db_err_msg = """\
