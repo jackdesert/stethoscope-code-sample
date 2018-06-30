@@ -24,15 +24,28 @@ def my_view(request):
              renderer='json',
              request_method='POST')
 def haberdasher(request):
-    params = json.loads(request.body)
-    reading = RssiReading()
-    reading.name = params.get('name')
-    reading.value = params.get('value')
-    try:
+    reading = RssiReading(**rssi_reading_params(request))
+    if reading.valid:
         request.dbsession.add(reading)
-    except DBAPIError:
-        return Response(db_err_msg, content_type='text/plain', status=500)
-    return { 'name': reading.name, 'value': reading.value }
+        return reading.to_dict()
+
+def rssi_reading_params(request):
+    whitelist = {'badge_id', 'badge_nonce', 'pi_id', 'pi_nonce'}
+    params = json.loads(request.body)
+    output = { k:v for k,v in params.items() if k in whitelist }
+
+    counter = 1
+    for beacon_id, beacon_strength in params.get('beacons') or []:
+        output[f'beacon_{counter}_id']       = beacon_id
+        output[f'beacon_{counter}_strength'] = beacon_strength
+        counter += 1
+        if counter > 3:
+            break
+    return output
+
+
+
+
 
 
 db_err_msg = """\

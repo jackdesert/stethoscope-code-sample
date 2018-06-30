@@ -1,6 +1,12 @@
 stethoscope
 ===========
 
+
+Ingest RSSI readings from badges
+
+Predict location based on this data.
+
+
 Getting Started
 ---------------
 
@@ -34,7 +40,7 @@ Getting Started
 
 
 
-Developing a Model
-------------------
+API
+---
 
-RssiReading()
+    curl -k -X POST -H "Content-Type:application/json"  -i http://localhost:6543/rssi_readings   -d '{"badge_id":"2","pi_id":"2"}'
