@@ -28,6 +28,8 @@ def haberdasher(request):
     if reading.valid:
         request.dbsession.add(reading)
         return reading.to_dict()
+    else:
+        return dict(errors=reading.errors)
 
 def rssi_reading_params(request):
     whitelist = {'badge_id', 'badge_nonce', 'pi_id', 'pi_nonce'}

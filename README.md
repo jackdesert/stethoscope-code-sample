@@ -40,6 +40,30 @@ Getting Started
 
 
 
+Prerequisites
+-------------
+
+  * Python3
+  * redis-py https://github.com/andymccurdy/redis-py
+
+    python3 -m pip install --user redis
+
+Get Person IDs
+--------------
+
+GET staging.elitecare.com/api/badges_people.json
+
+Now we know which badge maps to which person_id
+
+
+Set Locations
+-------------
+
+POST staging.elitecare.com/api/location
+
+payload: [{person_id: xxx, room_id: xxx}, ...]
+
+
 API
 ---
 
