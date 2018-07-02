@@ -32,7 +32,7 @@ def haberdasher(request):
         return dict(errors=reading.errors)
 
 def rssi_reading_params(request):
-    whitelist = {'badge_id', 'badge_nonce', 'pi_id', 'pi_nonce'}
+    whitelist = {'badge_id', 'pi_id'}
     params = json.loads(request.body)
     output = { k:v for k,v in params.items() if k in whitelist }
 

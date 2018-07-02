@@ -16,7 +16,6 @@ class RssiReading(Base):
     __tablename__ = 'rssi_readings'
     id = Column(Integer, primary_key=True)
     badge_id    = Column(Text, nullable=False)
-    badge_nonce = Column(Text)
     beacon_1_id = Column(Text)
     beacon_2_id = Column(Text)
     beacon_3_id = Column(Text)
@@ -25,7 +24,6 @@ class RssiReading(Base):
     beacon_3_strength = Column(Float)
     # TODO Do we really need to store pi_id with this model?
     pi_id       = Column(Text, nullable=False)
-    pi_nonce    = Column(Text)
     timestamp   = Column(DateTime, default=datetime.now)
 
     # Note badge_id is included, but not pi_id because we will get the

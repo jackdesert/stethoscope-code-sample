@@ -80,6 +80,7 @@ bip-orion
 bip-scidata
 bip-science
 bip-scifi
+bip-ble
 
 
 Curl Example
