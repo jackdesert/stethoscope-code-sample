@@ -10,14 +10,14 @@ Payload
     {
      'badge_id': <badge_id>,
      'pi_id':    <pi_id>,
-     'beacons': [ {<beacon_id>: <rssi>},
-                  {<beacon_id>: <rssi>},
-                  {<beacon_id>: <rssi>} ]
+     'beacons': { <beacon_id>: <rssi>,
+                  <beacon_id>: <rssi>,
+                  <beacon_id>: <rssi> }
     }
 
 Badge ID and PI ID are required keys.
 
-Beacons are expected to be listed strongest first.
+The ordering of the beacons does not matter.
 
 Parameters not listed in the payload above will be ignored.
 
@@ -70,23 +70,23 @@ return 201 and the rest to return 409.
 Subdomain Name
 --------------
 
+bip-ble
 bip-data
 bip-data-science
 bip-deep-learning
-bip-gps *
+bip-gps
 bip-locale
 bip-loran
 bip-orion
 bip-scidata
 bip-science
-bip-scifi
-bip-ble
+bip-stethoscope (stethoscope is the name of the project repo)
 
 
 Curl Example
 ------------
 
-    curl -k -X POST -H "Content-Type:application/json"  -i https://bip-gps.elitecare.com/rssi_readings   -d '{"badge_id":"1", "pi_id":"2", "beacons":[{"a": -30}, {"b": -35}, {"c": -40}] }'
+    curl -k -X POST -H "Content-Type:application/json"  -i https://bip-stethoscope.elitecare.com/rssi_readings   -d '{"badge_id":"1", "pi_id":"2", "beacons":{"a": -30, "b": -35, "c": -40} }'
 
 
 

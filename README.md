@@ -7,6 +7,25 @@ Ingest RSSI readings from badges
 Predict location based on this data.
 
 
+Install pyenv and Python 3.6
+----------------------------
+
+Install pyenv and python 3.6+. See doc/pyenv.md
+Version 3.6 is required because this project uses f-strings.
+
+    cd /path/to/stethoscope
+    pyenv local 3.6.6
+
+
+
+Install Other Prerequisites
+---------------------------
+
+    sudo apt install -y htop nginx python3-venv redis-server
+
+
+
+
 Getting Started
 ---------------
 
@@ -18,9 +37,9 @@ Getting Started
 
     python3 -m venv env
 
-- Upgrade packaging tools.
+- Upgrade packaging tools [and redis]
 
-    env/bin/pip install --upgrade pip setuptools
+    env/bin/pip install --upgrade pip setuptools redis
 
 - Install the project in editable mode with its testing requirements.
 
@@ -39,14 +58,25 @@ Getting Started
     env/bin/pserve development.ini
 
 
+Redis
+-----
 
-Prerequisites
--------------
+redis-py is required: https://github.com/andymccurdy/redis-py
 
-  * Python3
-  * redis-py https://github.com/andymccurdy/redis-py
 
-    python3 -m pip install --user redis
+Nginx
+-----
+
+    cd /etc/nginx/sites-enabled
+    sudo ln -s /home/ubuntu/stethoscope/config/bip-stethoscope-nginx.conf
+    sudo nginx -s reload
+
+
+SSL via Let's Encrypt
+---------------------
+
+https://certbot.eff.org/
+
 
 Get Person IDs
 --------------
@@ -69,6 +99,18 @@ API
 
     curl -k -X POST -H "Content-Type:application/json"  -i http://localhost:6543/rssi_readings   -d '{"badge_id":"2","pi_id":"2"}'
 
+
+
+SECURITY and PRODUCTION
+-----------------------
+
+Some things to address before going live in production:
+
+  * Lock down IP address (Elitecare + Jack + Tony + Bill + our EC2 boxen)
+  * Move to production.ini
+  * Move to postgres (at least for production)
+  * Load test (vegeta)
+  * Decide whether we want persistent data when we stop the box.
 
 
 BACKLOG

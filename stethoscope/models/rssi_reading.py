@@ -63,7 +63,7 @@ class RssiReading(Base):
 
     @property
     def _redis_dedup_key(self):
-        values = (self.__dict__.get(key) or '' for key in self.DEDUP_FIELDS)
+        values = (str(self.__dict__.get(key)) for key in self.DEDUP_FIELDS)
         specific = '|'.join(values)
         return f'rssi_reading__{specific}'
 

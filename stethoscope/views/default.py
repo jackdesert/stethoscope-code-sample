@@ -8,6 +8,7 @@ from ..models import RssiReading
 
 import pdb
 import json
+import operator
 
 
 @view_config(route_name='home', renderer='../templates/mytemplate.jinja2')
@@ -37,7 +38,8 @@ def rssi_reading_params(request):
     output = { k:v for k,v in params.items() if k in whitelist }
 
     counter = 1
-    for beacon_id, beacon_strength in params.get('beacons') or []:
+    beacons = params.get('beacons') or {}
+    for beacon_id, beacon_strength in sorted(beacons.items(), key=operator.itemgetter(0)):
         output[f'beacon_{counter}_id']       = beacon_id
         output[f'beacon_{counter}_strength'] = beacon_strength
         counter += 1
