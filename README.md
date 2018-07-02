@@ -78,6 +78,16 @@ SSL via Let's Encrypt
 https://certbot.eff.org/
 
 
+Nginx Server Tokens
+-------------------
+
+It's considered more secure to not broadcast "nginx (version)/(os_version)" with each request.
+Open /etc/nginx/nginx.conf and uncomment this line:
+
+    server_tokens off;
+
+
+
 Get Person IDs
 --------------
 
@@ -97,7 +107,8 @@ payload: [{person_id: xxx, room_id: xxx}, ...]
 API
 ---
 
-    curl -k -X POST -H "Content-Type:application/json"  -i http://localhost:6543/rssi_readings   -d '{"badge_id":"2","pi_id":"2"}'
+    curl -k -X POST -H "Content-Type:application/json"  -i http://localhost:6543/rssi_readings   -d '{"badge_id":"1", "pi_id":"2", "beacons":{"a": -30, "b": -35, "c": -40} }'
+
 
 
 
@@ -111,6 +122,8 @@ Some things to address before going live in production:
   * Move to postgres (at least for production)
   * Load test (vegeta)
   * Decide whether we want persistent data when we stop the box.
+  * Get pyramid to return 500 when server breaks (currently returns 404)
+  * uWSGI / emperor / systemd
 
 
 BACKLOG

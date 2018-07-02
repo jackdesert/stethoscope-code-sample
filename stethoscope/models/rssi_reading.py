@@ -39,14 +39,22 @@ class RssiReading(Base):
         errors = []
         if not self.badge_id:
             errors.append('badge_id missing')
-        if not self.id and not self.original:
-            errors.append('duplicate')
+        if not self.pi_id:
+            errors.append('pi_id missing')
         self.errors = errors
         return not errors
+
+    @property
+    def invalid(self):
+        return not self.valid
 
     def to_dict(self):
         columns = self.__table__.columns.keys()
         return { k:v for k,v in self.__dict__.items() if k in columns }
+
+    @property
+    def duplicate(self):
+        return not self.original
 
     @property
     def original(self):

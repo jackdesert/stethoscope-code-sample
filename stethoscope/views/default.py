@@ -26,11 +26,16 @@ def my_view(request):
              request_method='POST')
 def haberdasher(request):
     reading = RssiReading(**rssi_reading_params(request))
-    if reading.valid:
+    if reading.invalid:
+        request.response.status_code = 400
+        return dict(errors=reading.errors)
+    elif reading.duplicate:
+        request.response.status_code = 409
+        return dict(errors=['duplicate'])
+    else:
+        request.response.status_code = 201
         request.dbsession.add(reading)
         return reading.to_dict()
-    else:
-        return dict(errors=reading.errors)
 
 def rssi_reading_params(request):
     whitelist = {'badge_id', 'pi_id'}
