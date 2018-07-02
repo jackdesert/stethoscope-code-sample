@@ -68,3 +68,13 @@ API
 ---
 
     curl -k -X POST -H "Content-Type:application/json"  -i http://localhost:6543/rssi_readings   -d '{"badge_id":"2","pi_id":"2"}'
+
+
+
+BACKLOG
+-------
+
+* Return proper status codes
+* Index action
+
+
