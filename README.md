@@ -37,9 +37,9 @@ Getting Started
 
     python3 -m venv env
 
-- Upgrade packaging tools [and redis]
+- Upgrade packaging tools [and redis, markdown]
 
-    env/bin/pip install --upgrade pip setuptools redis
+    env/bin/pip install --upgrade pip setuptools redis markdown
 
 - Install the project in editable mode with its testing requirements.
 
