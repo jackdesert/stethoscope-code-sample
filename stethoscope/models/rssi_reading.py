@@ -11,6 +11,7 @@ from sqlalchemy import (
 from .meta import Base
 
 import redis
+import pdb
 
 class RssiReading(Base):
     __tablename__ = 'rssi_readings'
@@ -75,5 +76,17 @@ class RssiReading(Base):
         specific = '|'.join(values)
         return f'rssi_reading__{specific}'
 
+    @property
+    def timestamp_ago(self):
+        delta = datetime.now() - self.timestamp
+        sec = delta.total_seconds()
+        if sec < 60:
+            return f'{ round(sec) } sec ago'
+        elif sec < 3600:
+            return f'{ round(sec/60) } min ago'
+        elif sec < 86400:
+            return f'{ round(sec/3600) } hrs ago'
+        else:
+            return f'{ round(sec/86400) } days ago'
 
 Index('rssi_readings__badge_id', RssiReading.badge_id)

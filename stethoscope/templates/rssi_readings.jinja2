@@ -1,0 +1,36 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+<h2>RSSI Readings</h2>
+<table class='table'>
+    <tr class='table__tr'>
+        <th class='table__th'>ID</th>
+        <th class='table__th'>Badge</th>
+        <th class='table__th'>PI</th>
+        <th class='table__th'>Beacons</th>
+        <th class='table__th'>Timestamp</th>
+    </tr>
+    {% for r in readings %}
+        <tr class='table__tr'>
+            <td class='table__td'>{{ r.id }}</td>
+            <td class='table__td'>{{ r.badge_id }}</td>
+            <td class='table__td'>{{ r.pi_id }}</td>
+            <td class='table__td'>
+                <div class='beacon'>
+                    <div class='beacon__id'>{{ r.beacon_1_id }}</div>
+                    <div class='beacon__strength'>{{ r.beacon_1_strength }}</div>
+                </div>
+
+                <div class='beacon'>
+                    <div class='beacon__id'>{{ r.beacon_2_id }}</div>
+                    <div class='beacon__strength'>{{ r.beacon_2_strength }}</div>
+                </div>
+
+                <div class='beacon'>
+                    <div class='beacon__id'>{{ r.beacon_3_id }}</div>
+                    <div class='beacon__strength'>{{ r.beacon_2_strength }}</div>
+                </div>
+            <td class='table__td'>{{ r.timestamp_ago }}</td>
+    {% endfor %}
+</table>
+{% endblock content %}

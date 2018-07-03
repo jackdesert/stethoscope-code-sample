@@ -1,5 +1,5 @@
-RSSI Readings
-=============
+API: RSSI Readings
+==================
 
 POST /rssi_readings
 
@@ -22,7 +22,8 @@ The ordering of the beacons does not matter.
 Parameters not listed in the payload above will be ignored.
 
 
-### Data Types
+Data Types
+----------
 
   * badge_id:  string
   * pi_id:     string
@@ -46,7 +47,8 @@ Status Codes
     * 500: Server error
 
 
-### Regarding 409 Duplicates
+Duplicates are Expected
+-----------------------
 
 When N PIs hear a particular badge, all N of those PIs will POST
 the same data to this endpoint.
@@ -65,22 +67,6 @@ likelihood that any given POST will return a 409. For example, if there is only
 one PI, you can expect 1/5 of its POSTs to return 201 and the rest to return
 409. Similarly, if there are three PIs, you can expect 1/15 of the POSTs to
 return 201 and the rest to return 409.
-
-
-Subdomain Name
---------------
-
-bip-ble
-bip-data
-bip-data-science
-bip-deep-learning
-bip-gps
-bip-locale
-bip-loran
-bip-orion
-bip-scidata
-bip-science
-bip-stethoscope (stethoscope is the name of the project repo)
 
 
 Curl Example

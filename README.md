@@ -128,10 +128,25 @@ Some things to address before going live in production:
     - it it really feasible to lock this down via IP address?
 
 
+Subdomain Names Considered
+--------------------------
+
+    bip-ble
+    bip-data
+    bip-data-science
+    bip-deep-learning
+    bip-gps
+    bip-locale
+    bip-loran
+    bip-orion
+    bip-scidata
+    bip-science
+    bip-stethoscope (stethoscope is the name of the project repo)
+
+
 BACKLOG
 -------
 
-* Return proper status codes
-* Index action
+* Make it clear which page you are on
 
 

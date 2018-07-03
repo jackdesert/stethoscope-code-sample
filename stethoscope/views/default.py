@@ -2,9 +2,12 @@ from pyramid.response import Response
 from pyramid.view import view_config
 
 from sqlalchemy.exc import DBAPIError
+from sqlalchemy import desc
 
 from ..models import MyModel
 from ..models import RssiReading
+
+from datetime import datetime
 
 import pdb
 import json
@@ -21,9 +24,21 @@ def my_view(request):
     return {'one': one, 'project': 'stethoscope'}
 
 
+
+
+
+@view_config(route_name='rssi_readings',
+             renderer='../templates/rssi_readings.jinja2')
+def rssi_readings_view(request):
+    readings = request.dbsession.query(RssiReading).order_by(desc('id')).limit(50)
+    return dict(readings=readings, now=datetime.now(), round=round)
+
+
+
+
+
 @view_config(route_name='create_rssi_reading',
-             renderer='json',
-             request_method='POST')
+             renderer='json')
 def haberdasher(request):
     reading = RssiReading(**rssi_reading_params(request))
     if reading.invalid:

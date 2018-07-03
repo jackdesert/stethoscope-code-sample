@@ -6,6 +6,9 @@ import markdown
 import pdb
 
 class MarkdownRenderer:
+    JINJA_ENV = Environment(loader=PackageLoader('stethoscope', 'templates'),
+                            autoescape=select_autoescape(['html', 'xml']))
+
     def __init__(self, info):
         """ Constructor: info will be an object having the
         following attributes:
@@ -29,17 +32,7 @@ class MarkdownRenderer:
             contents = f.read()
 
         inner_html = markdown.markdown(contents)
-
-        env = Environment(
-            loader=PackageLoader('stethoscope', 'templates'),
-            autoescape=select_autoescape(['html', 'xml'])
-        )
-
-        # Pass the raw_html through a generic jinja2 template
-        # so we can inherit from layout.jinja2
-        generic_template = env.get_template('generic.jinja2')
-        html = generic_template.render(request=system['request'],
-                                       inner_html=inner_html)
+        html = self.__wrap_with_jinja2_layout(inner_html, system['request'])
 
         return html
         """ Call the renderer implementation with the value
@@ -50,3 +43,13 @@ class MarkdownRenderer:
         * The system value is a dictionary containing available system values
 
         (e.g., view, context, and request). """
+
+    def __wrap_with_jinja2_layout(self, inner_html, request):
+
+        # Pass the raw_html through a generic jinja2 template
+        # so we can inherit from layout.jinja2
+        generic_template = self.JINJA_ENV.get_template('generic.jinja2')
+        html = generic_template.render(request=request,
+                                       inner_html=inner_html)
+        return html
+
