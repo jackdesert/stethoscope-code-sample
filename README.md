@@ -117,13 +117,15 @@ SECURITY and PRODUCTION
 
 Some things to address before going live in production:
 
-  * Lock down IP address (Elitecare + Jack + Tony + Bill + our EC2 boxen)
+  * Lock down IP address (Elitecare + Jack + Tony + Bill + our EC2 boxen + site24x7)
   * Move to production.ini
   * Move to postgres (at least for production)
   * Load test (vegeta)
   * Decide whether we want persistent data when we stop the box.
   * Get pyramid to return 500 when server breaks (currently returns 404)
   * uWSGI / emperor / systemd
+  * Get index page to load from site24x7
+    - it it really feasible to lock this down via IP address?
 
 
 BACKLOG
