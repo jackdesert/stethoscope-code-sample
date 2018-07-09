@@ -1,0 +1,22 @@
+[Unit]
+Description=Stethoscope
+Wants=network.target
+Wants=postgresql.service
+Wants=redis-server.service
+
+[Service]
+Type=simple
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/stethoscope
+
+#ExecStart=/bin/bash -lc '/home/ubuntu/stethoscope/env/bin/pserve production.ini'
+ExecStart=/home/ubuntu/stethoscope/env/bin/pserve production.ini
+
+TimeoutSec=30
+RestartSec=15s
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
