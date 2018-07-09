@@ -1,33 +1,89 @@
-stethoscope
+Stethoscope
 ===========
 
+A room-by-room location predictor based on badges RSSI readings.
 
-Ingest RSSI readings from badges
+* Post badge RSSI readings to Stethoscope via the API (see docs/api.md)
+* View recent RSSI readings at /.
+* Eventually Stethoscope will be able to predict in which room a particular
+badge is located.
 
-Predict location based on this data.
+
+Technologies
+------------
+
+### Python
+
+This project is written in Python. Python is a strong choice because it
+has excellent data science libraries (including deep learning libraries
+like keras).
 
 
-Install pyenv and Python 3.6
-----------------------------
+### Pyramid
 
-Install pyenv and python 3.6+. See doc/pyenv.md
+Pyramid is a framework with more flexibilty than Django
+(meaning it will let us use SQLAlchemy)
+but more structure than Flask.
+
+
+### SQLAlchemy
+
+SQLAlchemy is the object-relational mapper.
+
+
+### CookieCutter
+
+This project was jump-started with the [pyramid-cookiecutter-alchemy](https://github.com/Pylons/pyramid-cookiecutter-alchemy) cookiecutter.
+
+
+
+
+
+
+
+
+
+
+
+---
+---
+---
+
+Installation
+------------
+
+### Python3.6 required
+
 Version 3.6 is required because this project uses f-strings.
 
-    cd /path/to/stethoscope
-    pyenv local 3.6.6
+
+    python3 --version
+
+If you have 3.6 or later, you may skip to the next section.
+
+If you have 3.5 or earlier, see doc/pyenv.md
+to install pyenv and python 3.6 or later.
+
+Once you have python 3.6 or later installed, use that version
+of python when invoking `python3 -m venv env` in the "Getting Started"
+section below.
+
+Once you invoke venv to create the sandboxed "venv", you can
+delete the .python-version file that was probably created
+when you called `pyenv local 3.6.x`
 
 
 
-Install Other Prerequisites
----------------------------
+
+### Install Other Prerequisites
 
     sudo apt install -y htop nginx python3-venv redis-server
 
 
 
 
-Getting Started
----------------
+Getting Started (This step generated from cookiecutter)
+-------------------------------------------------------
 
 - Change directory into your newly created project.
 
@@ -35,6 +91,8 @@ Getting Started
 
 - Create a Python virtual environment.
 
+    # This must be done with python 3.6 or later
+    # because this project uses f-strings
     python3 -m venv env
 
 - Upgrade packaging tools [and redis, markdown]
@@ -61,15 +119,36 @@ Getting Started
 Redis
 -----
 
-redis-py is required: https://github.com/andymccurdy/redis-py
+This project uses redis as part of its deduplication scheme.
+Docs are at https://github.com/andymccurdy/redis-py
 
 
 Nginx
 -----
 
     cd /etc/nginx/sites-enabled
+    sudo rm default
     sudo ln -s /home/ubuntu/stethoscope/config/bip-stethoscope-nginx.conf
     sudo nginx -s reload
+
+
+### Nginx Server Tokens
+
+It's considered more secure to not broadcast "nginx (version)/(os_version)" with each request.
+Open /etc/nginx/nginx.conf and uncomment this line:
+
+    server_tokens off;
+
+
+Systemd
+-------
+
+Stethoscope runs on the waitress webserver, which is easy to set up on systemd.
+
+    cd /lib/systemd/system
+    sudo ln -s /home/ubuntu/config/stethoscope.service
+    sudo systemctl enable stethoscope.service
+    sudo systemctl start stethoscope.service
 
 
 SSL via Let's Encrypt
@@ -78,30 +157,38 @@ SSL via Let's Encrypt
 https://certbot.eff.org/
 
 
-Nginx Server Tokens
--------------------
-
-It's considered more secure to not broadcast "nginx (version)/(os_version)" with each request.
-Open /etc/nginx/nginx.conf and uncomment this line:
-
-    server_tokens off;
 
 
 
-Get Person IDs
---------------
+
+
+
+
+---
+---
+---
+
+Other Pieces that May Need Implementing to Move This Project Forward
+====================================================================
+
+
+
+Get Person IDs (So we can map badges to people)
+-----------------------------------------------
 
 GET staging.elitecare.com/api/badges_people.json
 
 Now we know which badge maps to which person_id
 
 
-Set Locations
--------------
+
+Set Locations (To Acquire Training Data)
+----------------------------------------
 
 POST staging.elitecare.com/api/location
 
 payload: [{person_id: xxx, room_id: xxx}, ...]
+
 
 
 API
@@ -128,6 +215,7 @@ Some things to address before going live in production:
     - it it really feasible to lock this down via IP address?
 
 
+
 Subdomain Names Considered
 --------------------------
 
@@ -142,6 +230,7 @@ Subdomain Names Considered
     bip-scidata
     bip-science
     bip-stethoscope (stethoscope is the name of the project repo)
+
 
 
 BACKLOG
