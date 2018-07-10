@@ -199,6 +199,16 @@ API
 
 
 
+uWSGI
+-----
+
+Here is the invocation of the entry point defined by wsgi.py
+
+    sudo uwsgi --chmod-socket=020 --enable-threads --plugin=python3 -s /home/ubuntu/stethoscope/tmp/stethoscope.sock --manage-script-name --mount /=wsgi_debugging:app --uid ubuntu --gid www-data --virtualenv env
+
+
+
+
 SECURITY and PRODUCTION
 -----------------------
 
