@@ -158,9 +158,19 @@ https://certbot.eff.org/
 
 
 
+Performance Load Testing
+------------------------
 
+see tools/README.md and tools/generate_load_test.py.
 
+In short, on an EC2 nano box running waitress via systemd,
+this app stands up to 400 total requests/second, of which 20/second
+write to the database. (5% unique)
 
+This is enough to collect data in 5 houses simultaneously.
+
+Note this did not include load from location prediction, because 
+as of July 12, 2018 that piece has not been built yet.
 
 
 
