@@ -2,7 +2,6 @@ from datetime import datetime
 from sqlalchemy import (
     Column,
     DateTime,
-    Float,
     Index,
     Integer,
     Text,
@@ -20,9 +19,9 @@ class RssiReading(Base):
     beacon_1_id = Column(Text)
     beacon_2_id = Column(Text)
     beacon_3_id = Column(Text)
-    beacon_1_strength = Column(Float)
-    beacon_2_strength = Column(Float)
-    beacon_3_strength = Column(Float)
+    beacon_1_strength = Column(Integer)
+    beacon_2_strength = Column(Integer)
+    beacon_3_strength = Column(Integer)
     # TODO Do we really need to store pi_id with this model?
     pi_id       = Column(Text, nullable=False)
     timestamp   = Column(DateTime, default=datetime.now)
@@ -33,7 +32,7 @@ class RssiReading(Base):
                     'beacon_1_strength', 'beacon_2_strength', 'beacon_3_strength')
 
     REDIS = redis.StrictRedis(host='localhost', port=6379, db=0)
-    DEDUP_PERIOD_IN_SECONDS = 5
+    DEDUP_PERIOD_IN_MILLISECONDS = 4500
 
     @property
     def valid(self):
@@ -65,7 +64,7 @@ class RssiReading(Base):
         # and specify an expiration
         written = self.REDIS.set(self._redis_dedup_key,
                                  'Hi Mom', # This field could be anything
-                                 ex=self.DEDUP_PERIOD_IN_SECONDS,
+                                 px=self.DEDUP_PERIOD_IN_MILLISECONDS,
                                  nx=True)
         # If it was written, it's original
         return written

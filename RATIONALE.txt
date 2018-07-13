@@ -1,0 +1,23 @@
+RATIONALE
+=========
+
+Q: What does Stethoscope do?
+A: It receives badge rssi data through its /rssi_readings API,
+   and eventually it will predict where a badge is located.
+
+Q: Why is this written in Python, when much of our other software is in Ruby?
+A: Python is a strong choice for data analysis, and has solid libraries
+   for deep learning, which Jack hopes to use in determining location.
+   Also, Jack has had renewed interest in learning Python really well.
+
+Q: Why (as of July 2018) is the database sqlite?
+A: It's fast enough, it's the simplest SQL system to set up, and it is also
+   convenient for copying datasets.
+
+   Regarding speed of sqlite,  in July 2018 Jack conducted load tests against
+   stethoscope, and assuming 5% uniqueness, stethoscope can handle 400 requests
+   per second (of which only 20/second are database writes because of 5%
+   uniqueness assumption) which represents 4 pis per house, 20 badges per
+   house, and five total houses.  The load test was conducted with sqlite in
+   place, and the database was not the bottleneck. The bottleneck was that the
+   server ran out of file descriptors.

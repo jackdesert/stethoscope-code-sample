@@ -59,7 +59,9 @@ def rssi_reading_params(request):
 
     counter = 1
     beacons = params.get('beacons') or {}
-    for beacon_id, beacon_strength in sorted(beacons.items(), key=operator.itemgetter(0)):
+    beacons_sorted = sorted(beacons.items(), key=operator.itemgetter(1), reverse=True)
+
+    for beacon_id, beacon_strength in beacons_sorted:
         output[f'beacon_{counter}_id']       = beacon_id
         output[f'beacon_{counter}_strength'] = beacon_strength
         counter += 1

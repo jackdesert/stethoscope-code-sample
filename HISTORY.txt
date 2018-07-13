@@ -1,0 +1,7 @@
+HISTORY
+=======
+
+2018-07-03 Original launch with /rssi_readings api, index action, and api docs
+2018-07-07 Mackenzie was fired
+2018-07-09 Added systemd (still running on waitress)
+2018-07-12 Load testing against sqlite showed 400req/sec (20/sec were database writes)

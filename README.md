@@ -157,6 +157,12 @@ SSL via Let's Encrypt
 https://certbot.eff.org/
 
 
+Testing
+-------
+
+    env/bin/pytest
+
+
 
 Performance Load Testing
 ------------------------
@@ -169,7 +175,7 @@ write to the database. (5% unique)
 
 This is enough to collect data in 5 houses simultaneously.
 
-Note this did not include load from location prediction, because 
+Note this did not include load from location prediction, because
 as of July 12, 2018 that piece has not been built yet.
 
 
@@ -225,31 +231,9 @@ SECURITY and PRODUCTION
 Some things to address before going live in production:
 
   * Lock down IP address (Elitecare + Jack + Tony + Bill + our EC2 boxen + site24x7)
-  * Move to production.ini
-  * Move to postgres (at least for production)
-  * Load test (vegeta)
-  * Decide whether we want persistent data when we stop the box.
-  * Get pyramid to return 500 when server breaks (currently returns 404)
-  * uWSGI / emperor / systemd
-  * Get index page to load from site24x7
-    - it it really feasible to lock this down via IP address?
+    - Is this necessary?
+    - what about site24x7
 
-
-
-Subdomain Names Considered
---------------------------
-
-    bip-ble
-    bip-data
-    bip-data-science
-    bip-deep-learning
-    bip-gps
-    bip-locale
-    bip-loran
-    bip-orion
-    bip-scidata
-    bip-science
-    bip-stethoscope (stethoscope is the name of the project repo)
 
 
 
@@ -257,5 +241,16 @@ BACKLOG
 -------
 
 * Make it clear which page you are on
+  * Think about ways of visualizing the data coming in
+    - allow download of sqlite database?
+  * Architect where button press data will go. Elitecarerails?
+  * Get pyramid to return 500 when server breaks (currently returns 404)
+  * Slack notifications when something breaks
+  * RATIONALE
+    - why waitress
+    - why sqlite
+    - why pyramid
+    - why python
+    - why filter
 
 

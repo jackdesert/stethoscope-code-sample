@@ -22,3 +22,6 @@ test
 
 /tools/vegeta_data/*.json
 /tools/targets.txt
+
+*.pytest_cache
+
