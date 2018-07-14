@@ -1,0 +1,25 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+<h2>Badge {{ id }}</h2>
+
+<canvas id="mycanvas" width="1000" height="400"></canvas>
+
+<div class='space-4rem'></div>
+<h2>Tech Notes</h2>
+<ol class='tech-notes'>
+  <li>Readings arrive at left edge 6 seconds after ingestion</li>
+  <li>Readings are smoothed with a Bezier curve for aesthetics</li>
+</ul>
+
+
+
+<script src="{{request.static_url('stethoscope:static/smoothie.js')}}"></script>
+<script src="{{request.static_url('stethoscope:static/badge.js')}}"></script>
+
+<script>
+    window.onload = initiateBadgeSmoothie('{{ id }}',
+                                          '{{ server_time }}',
+                                           {{ max_id }})
+</script>
+{% endblock content %}

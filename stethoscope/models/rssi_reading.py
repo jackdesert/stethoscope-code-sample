@@ -7,6 +7,7 @@ from sqlalchemy import (
     Text,
 )
 
+from collections import OrderedDict
 from .meta import Base
 
 import redis
@@ -51,6 +52,16 @@ class RssiReading(Base):
     def to_dict(self):
         columns = self.__table__.columns.keys()
         return { k:v for k,v in self.__dict__.items() if k in columns }
+
+    def print(self):
+        print(f'id: {self.id}')
+        print(f'badge: {self.badge_id}')
+        print(f'pi: {self.pi_id}')
+        print('beacons:')
+        print(f'  {self.beacon_1_id}: {self.beacon_1_strength}')
+        print(f'  {self.beacon_2_id}: {self.beacon_2_strength}')
+        print(f'  {self.beacon_3_id}: {self.beacon_3_strength}')
+        print(f'timestamp: {self.timestamp}')
 
     @property
     def duplicate(self):

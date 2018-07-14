@@ -179,6 +179,16 @@ Note this did not include load from location prediction, because
 as of July 12, 2018 that piece has not been built yet.
 
 
+Smoothie Charts
+-------------
+
+http://smoothiecharts.org/
+
+Note that as of July 15, 2018 we are using a modified version of smoothie,
+available at https://github.com/jackdesert/smoothie/blob/display_series_label_in_tooltip/smoothie.js
+
+See the pull request at https://github.com/joewalnes/smoothie/pull/107
+
 
 ---
 ---
@@ -240,7 +250,9 @@ Some things to address before going live in production:
 BACKLOG
 -------
 
-* Make it clear which page you are on
+  * Find out where timezone is set for database
+    - at one point new readings were showing up as "7 hours ago"
+  * Make it clear which page you are on
   * Think about ways of visualizing the data coming in
     - allow download of sqlite database?
   * Architect where button press data will go. Elitecarerails?
@@ -252,5 +264,6 @@ BACKLOG
     - why pyramid
     - why python
     - why filter
+
 
 

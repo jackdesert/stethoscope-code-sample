@@ -1,10 +1,26 @@
 {% extends "layout.jinja2" %}
 
 {% block content %}
-  <h2>API Documentation</h2>
-  <a class='link' href='/api-docs/rssi_readings''>RSSI Readings</a>
+  <div class='col-6'>
+    <h2>Active Badges</h2>
+    {% for badge_id in active_badge_ids %}
+      <a href='/badges/{{ badge_id }}' class='link active-badge'>Badge {{ badge_id }}</a>
+    {% endfor %}
+  </div>
 
-  <h2>Raw Data</h2>
-  <a class='link' href='/rssi_readings'>RSSI Readings</a>
+  <div class='col-6'>
+    <h2>Active PIs</h2>
+    Placeholder
+    {% for pi_id in active_pi_ids %}
+      <div class='active-pi'>{{ pi_id }}</div>
+    {% endfor %}
+  </div>
+
+
+  <div class='col-12'>
+    <h2>API</h2>
+    <a class='link' href='/api-docs/rssi_readings''>Documentation</a>
+    <a class='link' href='/rssi_readings'>View Raw Data</a>
+  </div>
 
 {% endblock content %}
