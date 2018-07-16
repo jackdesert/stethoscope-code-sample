@@ -21,3 +21,11 @@ A: It's fast enough, it's the simplest SQL system to set up, and it is also
    house, and five total houses.  The load test was conducted with sqlite in
    place, and the database was not the bottleneck. The bottleneck was that the
    server ran out of file descriptors.
+
+Q: Why do the APIs use underscore_keys instead of camelKeys?
+A: The API is built in python, which uses underscore keys.
+   While one of the main users of the API is a Node application (camelKeys),
+   the other main user of the API is a Ruby application(underscore_keys).
+   So to make it easiest on the most number of users, it has been kept
+   in underscore, even though JSON is commonly done in camel.
+
