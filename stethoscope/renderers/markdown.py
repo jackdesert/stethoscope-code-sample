@@ -4,10 +4,13 @@
 from jinja2 import Environment, PackageLoader, select_autoescape
 import markdown
 import pdb
+import re
 
 class MarkdownRenderer:
     JINJA_ENV = Environment(loader=PackageLoader('stethoscope', 'templates'),
                             autoescape=select_autoescape(['html', 'xml']))
+
+    TITLE_FROM_FILENAME_REGEX = re.compile('.*\/([a-z_]+)\.md')
 
     def __init__(self, info):
         """ Constructor: info will be an object having the
@@ -31,7 +34,9 @@ class MarkdownRenderer:
         with open(markdown_file, 'r') as f:
             contents = f.read()
 
-        inner_html = markdown.markdown(contents)
+        breadcrumb_html = self.__breadcrumb(markdown_file)
+        inner_html = breadcrumb_html + markdown.markdown(contents)
+
         html = self.__wrap_with_jinja2_layout(inner_html, system['request'])
 
         return html
@@ -53,3 +58,9 @@ class MarkdownRenderer:
                                        inner_html=inner_html)
         return html
 
+    def __breadcrumb(self, markdown_file):
+        match = self.TITLE_FROM_FILENAME_REGEX.match(markdown_file)
+        if match:
+            name = match[1]
+            name = name.replace('_', ' ').title()
+            return f"<div class='crumb'><a href='/' class='crumb__link'>Home</a> / API Docs / {name}"

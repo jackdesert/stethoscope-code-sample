@@ -33,7 +33,6 @@ p {
   display: inline;
 }
 
-
 .link
 {
   display: block;
@@ -43,13 +42,12 @@ p {
   margin-left: 10px;
 }
 
-
-.link
+.link, .crumb__link
 {
   color: #f2b7bd;
   text-decoration: underline;
 }
-.link:hover
+.link:hover, .crumb__link:hover
 {
   color: #ffffff;
   text-decoration: underline;
