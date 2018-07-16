@@ -3,8 +3,8 @@
 body {
   font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: 300;
-  color: #ffffff;
-  background: #bc2131;
+  color: #732; /*#660000; */
+  background: #f2eaea;
 }
 h1,
 h2,
@@ -18,6 +18,14 @@ h6 {
 p {
   font-weight: 300;
 }
+
+
+.banner
+{
+  color: #ffffff;
+  background: #a80006;
+}
+
 .font-normal {
   font-weight: 400;
 }
@@ -42,14 +50,20 @@ p {
   margin-left: 10px;
 }
 
+.crumb
+{
+  font-size: 1.8rem;
+  margin-top: 0.6rem;
+}
+
 .link, .crumb__link
 {
-  color: #f2b7bd;
+  color: #a80006;
   text-decoration: underline;
 }
 .link:hover, .crumb__link:hover
 {
-  color: #ffffff;
+  color: #881111;
   text-decoration: underline;
 }
 

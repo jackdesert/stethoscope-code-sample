@@ -63,4 +63,4 @@ class MarkdownRenderer:
         if match:
             name = match[1]
             name = name.replace('_', ' ').title()
-            return f"<div class='crumb'><a href='/' class='crumb__link'>Home</a> / API Docs / {name}"
+            return f"<div class='crumb'><a href='/' class='crumb__link'>Home</a> -> API Docs -> {name}"
