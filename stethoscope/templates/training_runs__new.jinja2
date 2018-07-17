@@ -1,0 +1,51 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+<div class='col-12'>
+    <div class='crumb'>
+        <a href='/' class='crumb__link'>Home</a>
+        ->
+        <a href='/training_runs' class='crumb__link'>Training Runs</a>
+        ->
+        New
+    </div>
+
+    <h2>New Training Run</h2>
+
+
+    <label for='room_id'>Room</label>
+    <select id='room_id'>
+        {% for r in room_ids %}
+            <option>{{ r }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class='col-6'>
+    <label for='badge_ids'>Badges to Record</label>
+
+    <table class='table'>
+        <tr class='table__tr'>
+            <th class='table__th'></th>
+            <th class='table__th'>ID</th>
+            <th class='table__th'>Num ReadingsPI</th>
+        </tr>
+        {% for b in badge_ids %}
+            <tr class='table__tr'>
+                <td class='table__td'><input type='checkbox' value='{{ b }}' /></td>
+                <td class='table__td'>{{ b }}</td>
+                <td class='table__td' id='num-readings-for-badge-{{ b }}'></td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class='col-6'>
+    <input type='button' id='training-run-start-button' class='btn btn-primary' value='Start' ></input>
+    <a class='link' href='/training_runs'>Cancel</a>
+</div>
+
+<label for='total-readings'>Total:</label>
+<div id='total-readings'></div>
+
+{% endblock content %}

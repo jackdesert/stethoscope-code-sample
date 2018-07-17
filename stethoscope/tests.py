@@ -391,3 +391,94 @@ class TestTrainingRunBulkEnd(BaseTest):
         info = training_runs__bulk_end_view(req)
         self.assertEqual(req.response.status_code, 400)
         self.assertEqual(info, {'error': 'Please supply training_run_ids'})
+
+class TestTrainingRunBulkStats(BaseTest):
+
+    def setUp(self):
+        super(TestTrainingRunBulkStats, self).setUp()
+        from datetime import datetime
+        from datetime import timedelta
+        from .models.training_run import TrainingRun
+        from .models.rssi_reading import RssiReading
+
+        self.init_database()
+        now = datetime.now()
+        one_minute_ago  = now - timedelta(seconds=60)
+        two_minutes_ago = now - timedelta(seconds=120)
+
+
+        # Completed
+        completed_run = TrainingRun(start_timestamp=two_minutes_ago,
+                        end_timestamp=now,
+                        room_id='room_a',
+                        badge_id='badge_1')
+
+
+        reading_for_completed_1 = RssiReading(badge_id='badge_1',
+                                       timestamp=one_minute_ago,
+                                       beacon_1_id='abc',
+                                       pi_id='x',
+                                       beacon_1_strength=50)
+
+        reading_for_completed_2 = RssiReading(badge_id='badge_1',
+                                       timestamp=one_minute_ago,
+                                       beacon_1_id='abc',
+                                       pi_id='x',
+                                       beacon_1_strength=51)
+
+
+
+        # In-Progress
+        run_in_progress_1 = TrainingRun(start_timestamp=one_minute_ago,
+                            room_id='room_a',
+                            badge_id='badge_1')
+
+        run_in_progress_2 = TrainingRun(start_timestamp=one_minute_ago,
+                            room_id='room_a',
+                            badge_id='badge_2')
+
+
+        reading_during_1 = RssiReading(badge_id='badge_1',
+                                       timestamp=now,
+                                       beacon_1_id='abc',
+                                       pi_id='x',
+                                       beacon_1_strength=52)
+
+        reading_during_2 = RssiReading(badge_id='badge_1',
+                                       timestamp=now,
+                                       beacon_1_id='abc',
+                                       pi_id='x',
+                                       beacon_1_strength=53)
+
+        self.session.add(completed_run)
+        self.session.add(run_in_progress_1)
+        self.session.add(run_in_progress_2)
+        self.session.add(reading_for_completed_1)
+        self.session.add(reading_for_completed_2)
+        self.session.add(reading_during_1)
+        self.session.add(reading_during_2)
+        self.session.flush()
+
+        self.training_run_ids = [run_in_progress_1.id, run_in_progress_2.id]
+
+    def params(self):
+            return dict(room_id='room_a',
+                        in_progress_training_run_ids=self.training_run_ids)
+
+
+    def test_happy_path(self):
+        from .models.training_run import TrainingRun
+        from .views.training_runs import training_runs__bulk_stats_view
+        import json
+
+        req = dummy_request(self.session)
+        req.body = json.dumps(self.params())
+
+        info = training_runs__bulk_stats_view(req)
+        self.assertEqual(req.response.status_code, 200)
+        expected = { 'in_progress': { 'badge_1': 2,
+                                      'badge_2': 0, },
+                     'completed': 2,
+                     'total': 4 }
+
+        self.assertEqual(info, expected)

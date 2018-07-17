@@ -42,4 +42,3 @@ class TrainingRun(Base):
         print(f'badge: {self.badge_id}')
         print(f'start_timestamp: {self.start_timestamp}')
         print(f'end_timestamp: {self.end_timestamp}')
-
