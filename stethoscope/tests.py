@@ -66,7 +66,7 @@ class TestMyViewFailureCondition(BaseTest):
         self.assertEqual(info.status_int, 500)
 
 
-############  View Tests Written by Jack  #########################
+############  RssiReadings View Tests Written by Jack  #########################
 
 class TestHaberdasher(BaseTest):
 
@@ -137,7 +137,7 @@ class TestHaberdasher(BaseTest):
 #                    beacon_3_strength=30)
 
 
-############  Model Tests Written by Jack  #########################
+############ RssiReading  Model Tests Written by Jack  #########################
 
 class TestRssiReadingDuplicate(BaseTest):
 
@@ -268,3 +268,126 @@ class TestRssiReadingValidation(BaseTest):
         rr.pi_id = None
         self.assertFalse(rr.valid)
         self.assertTrue(rr.invalid)
+
+
+############ TrainingRun Model Tests Written by Jack  #########################
+
+class TestTrainingRun(BaseTest):
+
+
+    def validTrainingRun(self):
+        from .models.training_run import TrainingRun
+
+        training_run = TrainingRun(room_id='a',
+                                   badge_id='b')
+        return training_run
+
+
+    def test_happy_path(self):
+        run = self.validTrainingRun()
+        self.assertTrue(run.valid)
+
+    def test_fails_del_no_badge_id(self):
+        run = self.validTrainingRun()
+        run.badge_id = None
+        self.assertFalse(run.valid)
+        self.assertTrue(run.invalid)
+
+    def test_fails_del_no_room_id(self):
+        run = self.validTrainingRun()
+        run.room_id = None
+        self.assertFalse(run.valid)
+        self.assertTrue(run.invalid)
+
+
+
+############  TrainingRun View Tests Written by Jack  #########################
+
+class TestTrainingRunBulkStart(BaseTest):
+
+    def setUp(self):
+        super(TestTrainingRunBulkStart, self).setUp()
+        self.init_database()
+
+    def params(self):
+        # Instantiating out of order to make sure
+        # it is sorting *by value*
+        return dict(room_id='room_a',
+                    badge_ids=['badge_a', 'badge_b'])
+
+
+    def test_happy_path(self):
+        from .views.training_runs import training_runs__bulk_start_view
+        import json
+
+        req = dummy_request(self.session)
+        req.body = json.dumps(self.params())
+
+        info = training_runs__bulk_start_view(req)
+        self.assertEqual(req.response.status_code, 201)
+        self.assertEqual(info, {'training_run_ids': [1,2]})
+
+    def test_fails_no_room_id(self):
+        from .views.training_runs import training_runs__bulk_start_view
+        import json
+
+        req = dummy_request(self.session)
+        params = self.params()
+        params['room_id'] = None
+        req.body = json.dumps(params)
+
+        info = training_runs__bulk_start_view(req)
+        self.assertEqual(req.response.status_code, 400)
+        self.assertEqual(info, {'error': 'Please supply room_id'})
+
+
+class TestTrainingRunBulkEnd(BaseTest):
+
+    def setUp(self):
+        super(TestTrainingRunBulkEnd, self).setUp()
+        from datetime import datetime
+        from .models.training_run import TrainingRun
+
+        self.init_database()
+        now = datetime.now()
+
+        run_1 = TrainingRun(start_timestamp=now,
+                            room_id='room_a',
+                            badge_id='badge_1')
+
+        run_2 = TrainingRun(start_timestamp=now,
+                            room_id='room_a',
+                            badge_id='badge_1')
+        self.session.add(run_1)
+        self.session.add(run_2)
+        self.session.flush()
+
+        self.training_run_ids = [run_1.id, run_2.id]
+
+
+    def test_happy_path(self):
+        from .models.training_run import TrainingRun
+        from .views.training_runs import training_runs__bulk_end_view
+        import json
+
+        req = dummy_request(self.session)
+        params = dict(training_run_ids=self.training_run_ids)
+        req.body = json.dumps(params)
+
+        info = training_runs__bulk_end_view(req)
+        self.assertEqual(req.response.status_code, 200)
+        for id in self.training_run_ids:
+            t_run = self.session.query(TrainingRun).get(id)
+            self.assertIsNotNone(t_run.end_timestamp, 'Expected an end_timestamp')
+
+    def test_fails_no_training_run_ids(self):
+        from .views.training_runs import training_runs__bulk_end_view
+        import json
+
+        req = dummy_request(self.session)
+        params = dict(something_else_entirely=self.training_run_ids)
+        req.body = json.dumps(params)
+
+        info = training_runs__bulk_end_view(req)
+        self.assertEqual(req.response.status_code, 400)
+        self.assertEqual(info, {'error': 'Please supply training_run_ids'})

@@ -7,6 +7,7 @@ import zope.sqlalchemy
 # Base.metadata prior to any initialization routines
 from .mymodel import MyModel  # flake8: noqa
 from .rssi_reading import RssiReading  # flake8: noqa
+from .training_run import TrainingRun  # flake8: noqa
 
 # run configure_mappers after defining all of the models to ensure
 # all relationships can be setup
