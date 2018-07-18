@@ -1,27 +1,38 @@
 {% extends "layout.jinja2" %}
 
 {% block content %}
-  <div class='crumb'>Home</div>
-  <div class='col-6'>
-    <h2>Active Badges</h2>
-    {% for badge_id in active_badge_ids %}
-      <a href='/badges/{{ badge_id }}' class='link active-badge'>Badge {{ badge_id }}</a>
-    {% endfor %}
-  </div>
+    <div class='col-12'>
+        <div class='crumb'>Home</div>
+    </div>
+    <div class='col-6'>
+        <h2>Active Badges</h2>
+        {% for badge_id in active_badge_ids %}
+            <a href='/badges/{{ badge_id }}' class='link active-badge'>
+                Badge {{ badge_id }}
+            </a>
+        {% endfor %}
+    </div>
 
-  <div class='col-6'>
-    <h2>Active PIs</h2>
-    Placeholder
-    {% for pi_id in active_pi_ids %}
-      <div class='active-pi'>{{ pi_id }}</div>
-    {% endfor %}
-  </div>
+    <div class='col-6'>
+        <h2>Active PIs</h2>
+        Placeholder
+        {% for pi_id in active_pi_ids %}
+            <div class='active-pi'>{{ pi_id }}</div>
+        {% endfor %}
+    </div>
 
 
-  <div class='col-12'>
-    <h2>API</h2>
-    <a class='link' href='/api-docs/rssi_readings''>Documentation</a>
-    <a class='link' href='/rssi_readings'>View Raw Data</a>
-  </div>
 
+    <div class='col-12'>
+        <div class='space-2rem'></div>
+        <h2>Training</h2>
+        <a class='link' href='/training_runs''>Training Runs</a>
+    </div>
+
+    <div class='col-12'>
+        <div class='space-2rem'></div>
+        <h2>API</h2>
+        <a class='link' href='/api-docs/rssi_readings''>Documentation</a>
+        <a class='link' href='/rssi_readings'>View Raw Data</a>
+    </div>
 {% endblock content %}

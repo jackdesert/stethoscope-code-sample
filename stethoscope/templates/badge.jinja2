@@ -1,17 +1,19 @@
 {% extends "layout.jinja2" %}
 
 {% block content %}
-<div class='crumb'><a href='/' class='crumb__link'>Home</a> -> Badges -> Badge{{ id }}</div>
-<h2>Badge {{ id }}</h2>
+<div class='col-12'>
+    <div class='crumb'><a href='/' class='crumb__link'>Home</a> -> Badges -> Badge{{ id }}</div>
+    <h2>Badge {{ id }}</h2>
 
-<canvas id="mycanvas" width="1000" height="400"></canvas>
+    <canvas id="mycanvas" width="1000" height="400"></canvas>
 
-<div class='space-4rem'></div>
-<h2>Tech Notes</h2>
-<ol class='tech-notes'>
-  <li>Readings arrive at left edge 6 seconds after ingestion</li>
-  <li>Readings are smoothed with a Bezier curve for aesthetics</li>
-</ul>
+    <div class='space-4rem'></div>
+    <h2>Tech Notes</h2>
+    <ol class='tech-notes'>
+        <li>Readings arrive at left edge 6 seconds after ingestion</li>
+        <li>Readings are smoothed with a Bezier curve for aesthetics</li>
+    </ul>
+</div>
 
 
 

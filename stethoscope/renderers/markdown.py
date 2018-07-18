@@ -36,8 +36,9 @@ class MarkdownRenderer:
 
         breadcrumb_html = self.__breadcrumb(markdown_file)
         inner_html = breadcrumb_html + markdown.markdown(contents)
+        inner_html_with_col_12 = self.__wrap_with_col_12(inner_html)
 
-        html = self.__wrap_with_jinja2_layout(inner_html, system['request'])
+        html = self.__wrap_with_jinja2_layout(inner_html_with_col_12, system['request'])
 
         return html
         """ Call the renderer implementation with the value
@@ -57,6 +58,9 @@ class MarkdownRenderer:
         html = generic_template.render(request=request,
                                        inner_html=inner_html)
         return html
+
+    def __wrap_with_col_12(self, html):
+        return(f"<div class='col-12'>\n{html}\n</div>")
 
     def __breadcrumb(self, markdown_file):
         match = self.TITLE_FROM_FILENAME_REGEX.match(markdown_file)
