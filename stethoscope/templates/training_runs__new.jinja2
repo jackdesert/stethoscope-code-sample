@@ -11,41 +11,86 @@
     </div>
 
     <h2>New Training Run</h2>
-
-
-    <label for='room_id'>Room</label>
-    <select id='room_id'>
-        {% for r in room_ids %}
-            <option>{{ r }}</option>
-        {% endfor %}
-    </select>
 </div>
 
 <div class='col-6'>
-    <label for='badge_ids'>Badges to Record</label>
+    <div class='room-and-action'>
+        <h3 class='h3 h3_banner'>Room</h3>
+        <select class='form-control room-selector' id='room-id'>
+            {% for r in room_ids %}
+                <option>{{ r }}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-    <table class='table'>
-        <tr class='table__tr'>
-            <th class='table__th'></th>
-            <th class='table__th'>ID</th>
-            <th class='table__th'>Num ReadingsPI</th>
-        </tr>
+
+    <h3 class='h3 h3_banner'>Badges</h3>
+
+    <div class='list-of-checkboxes'>
         {% for b in badge_ids %}
-            <tr class='table__tr'>
-                <td class='table__td'><input type='checkbox' value='{{ b }}' /></td>
+            <div class='form-check'>
+                <input id='{{ b }}' class='form-check-input' type='checkbox'  />
+                <label for='{{ b }}' class='form-check-label' >{{ b }}</label>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class='col-6'>
+    <div class='room-and-action'>
+        <h3 class='h3 h3_banner'>Let's Do This</h3>
+        <input type='button' id='training-run-start-button' class='btn btn-primary start-button' value='Start' ></input>
+        <a class='link training-run-cancel' href='/training_runs'>Cancel</a>
+
+        <div class='error-message' id='error-message'></div>
+        <div class='success-message' id='success-message'></div>
+    </div>
+
+
+    <h3 class='h3 h3_banner'>Report</h3>
+
+    <table id='training-run-report-table' class='table hidden'>
+        <tr class='table__tr'>
+            <th class='table__th'>Badge</th>
+            <th class='table__th'>Readings</th>
+        </tr>
+
+
+        {% for row in rows %}
+    <li class="{{ loop.cycle('odd', 'even') }}">{{ row }}</li>
+{% endfor %}
+
+
+        {% for b in badge_ids %}
+        <tr class="table__tr {{  loop.cycle('table__tr_stripe', '') }}">
                 <td class='table__td'>{{ b }}</td>
                 <td class='table__td' id='num-readings-for-badge-{{ b }}'></td>
             </tr>
         {% endfor %}
+
+        <tr class='table__tr'>
+            <th colspan='3' class='table__th'></th>
+        </tr>
+
+        <tr class='table__tr'>
+            <td class='table__td table__td_total'>Preexisting</td>
+            <td id='completed-run-readings' class='table__td table__td_total'></td>
+        </tr>
+
+        <tr class='table__tr'>
+            <td class='table__td table__td_total'>Grand Total</td>
+            <td id='total-readings' class='table__td table__td_total'></td>
+        </tr>
     </table>
 </div>
 
-<div class='col-6'>
-    <input type='button' id='training-run-start-button' class='btn btn-primary' value='Start' ></input>
-    <a class='link' href='/training_runs'>Cancel</a>
-</div>
 
-<label for='total-readings'>Total:</label>
-<div id='total-readings'></div>
+
+<script src="{{request.static_path('stethoscope:static/training_run.js')}}"></script>
+
+<script>
+    window.onload = bindNewTrainingRun()
+</script>
+
 
 {% endblock content %}

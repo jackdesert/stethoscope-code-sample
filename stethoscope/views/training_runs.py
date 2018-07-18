@@ -33,6 +33,8 @@ def training_runs__new(request):
 
     return dict(room_ids=room_ids, badge_ids=badge_ids)
 
+
+
 @view_config(route_name='training_runs__bulk_start',
              renderer='json')
 def training_runs__bulk_start_view(request):
@@ -100,7 +102,7 @@ def training_runs__bulk_end_view(request):
              renderer='json')
 def training_runs__bulk_stats_view(request):
     params = json.loads(request.body)
-    training_run_ids = params.get('in_progress_training_run_ids')
+    training_run_ids = params.get('training_run_ids')
     room_id = params.get('room_id')
 
     if not training_run_ids:

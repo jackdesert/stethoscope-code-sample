@@ -1,3 +1,8 @@
+.hidden
+{
+  opacity: 0;
+}
+
 body {
   font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: 300;
@@ -18,10 +23,17 @@ p {
 }
 
 
-.banner
+.banner, .h3_banner
 {
   color: #d8adaf;
   background: #a80006;
+}
+
+.h3_banner
+{
+  padding-left: 0.5rem;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
 }
 
 .font-normal {
@@ -72,10 +84,28 @@ p {
 }
 
 
-.table__td
+.table__tr_stripe
+{
+  background: #edd;
+}
+
+
+/* Override bootstrap borders */
+table .table__td,
+table .table__th,
+table .table__tr
+{
+  border: none;
+}
+
+table .table__td, table .table__tr
 {
   padding: 1rem;
-  border: 1px solid white;
+}
+
+.table__td_total
+{
+  font-weight: bold;
 }
 
 .table .beacon
@@ -90,6 +120,17 @@ p {
 .table .beacon__strength
 {
   display: inline;
+}
+
+.list-of-checkboxes
+{
+  padding-left: 0.65rem;
+}
+
+.room-selector
+{
+  /* align text with h3 above */
+  padding-left: 0.3rem;
 }
 
 div.smoothie-chart-tooltip span {
@@ -107,6 +148,68 @@ div.smoothie-chart-tooltip {
   pointer-events: none;
 }
 
+.error-message, .success-message
+{
+  font-weight: bold;
+}
+
+.error-message
+{
+  color: green;
+}
+
+
+
+.start-button
+{
+  box-shadow: 0.1rem 0.1rem #a77 !important;
+}
+
+
+/* Use #body to get enough specifity to trump bootstrap */
+#body .start-button:active
+{
+  background: #801;
+  color: white;
+}
+
+.start-button, .start-button:focus
+{
+  font-size: 3rem;
+  width: 100%;
+  background: white;
+  border: 1px solid #a80006;
+  color: #a80006;
+}
+
+.start-button:hover
+{
+  background-color: #a80006;
+  color: white;
+}
+
+.start-button_running, .start-button_running:focus
+{
+  background-color: #ebb;
+  background-color: #dfd;
+}
+
+.start-button_running:hover
+{
+  background-color: #a80006;
+  color: white;
+}
+
+
+.training-run-cancel
+{
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+
+
 
 .space-1rem{ height: 1rem; }
 .space-2rem{ height: 2rem; }
@@ -115,6 +218,10 @@ div.smoothie-chart-tooltip {
 .space-5rem{ height: 5rem; }
 
 
+.room-and-action
+{
+  height: 20rem;
+}
 
 
 

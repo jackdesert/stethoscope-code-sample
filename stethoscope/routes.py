@@ -5,7 +5,7 @@ def includeme(config):
     config.add_route('training_runs__index', '/training_runs')
     config.add_route('training_runs__new', '/training_runs/new')
     config.add_route('training_runs__bulk_start', '/training_runs/bulk_start', request_method='POST')
-    config.add_route('training_runs__bulk_end', '/training_runs/bulk_end', request_method='PATCH')
+    config.add_route('training_runs__bulk_end', '/training_runs/bulk_end')
     config.add_route('training_runs__bulk_stats', '/training_runs/bulk_stats')
     config.add_route('rssi_readings', '/rssi_readings', request_method='GET')
     config.add_route('badge_show', '/badges/{id}', request_method='GET')
