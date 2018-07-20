@@ -17,8 +17,9 @@
     <div class='room-and-action'>
         <h3 class='h3 h3_banner'>Room</h3>
         <select class='form-control room-selector' id='room-id'>
-            {% for r in room_ids %}
-                <option>{{ r }}</option>
+            <option value=''>None</option>
+            {% for room_id, room_name in rooms %}
+                <option value='{{ room_id }}'>{{ room_name }}</option>
             {% endfor %}
         </select>
     </div>
@@ -70,6 +71,11 @@
 
         <tr class='table__tr'>
             <th colspan='3' class='table__th'></th>
+        </tr>
+
+        <tr class='table__tr'>
+            <td class='table__td table__td_total'>Badge Total</td>
+            <td id='in-progress-total' class='table__td table__td_total'></td>
         </tr>
 
         <tr class='table__tr'>

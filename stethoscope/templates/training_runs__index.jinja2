@@ -11,32 +11,48 @@
     <h2>Training Runs</h2>
     <a class='btn btn-primary' href='/training_runs/new'>New Training Run</a>
 
-    <div class='col-12'>
-        <table class='table'>
-            {% for r in rooms %}
-                <h2>Room {{ r['id'] }}
-                    <span class='num-room-readings'>({{ r['total_readings'] }} RSSI Readings)</span>
-                </h2>
+    <table class='table'>
+        {% for r in rooms %}
+            <tr class='table__tr'>
+                <th colspan='5' class='table__th table__th_looks-like-div'>
+                    {% if loop.previtem and loop.previtem.completed_runs %}
+                        <div class='space-2rem'></div>
+                    {% endif %}
+                    <h2 id='{{ r.id }}'>
+                        {{ r.name }}
+                        {% if r.reading_count %}
+                            <span class='num-room-readings'>
+                                ({{ r.reading_count }}
+                                    {% trans count=r.reading_count %}
+                                    Reading)
+                                    {% pluralize %}
+                                    Readings)
+                                    {% endtrans %}
+                            </span>
+                        {% endif %}
+                    </h2>
+                </th>
 
+            {% if r.completed_runs %}
                 <tr class='table__tr'>
                     <th class='table__th'>Badge</th>
-                    <th class='table__th'>Num Readings</th>
+                    <th class='table__th'>Readings</th>
                     <th class='table__th'>Start Time</th>
                     <th class='table__th'>End Time</th>
                     <th class='table__th'>Recorded By</th>
                 </tr>
-
-                {% for tr in r['training_runs'] %}
+            {% endif %}
+            {% for tr in r.completed_runs %}
+                <tr class="table__tr {{ loop.cycle('table__tr_stripe', '') }}">
                     <td class='table__td'>{{ tr.badge_id }}</td>
-                    <td class='table__td'>{{ tr.num_readings }}</td>
-                    <td class='table__td'>{{ str(tr.start_timestamp) }}</td>
-                    <td class='table__td'>{{ str(tr.end_timestamp) }}</td>
+                    <td class='table__td'>{{ tr.count_rssi_readings_memoized }}</td>
+                    <td class='table__td'>{{ tr.start_timestamp | format }}</td>
+                    <td class='table__td'>{{ tr.end_timestamp | format }}</td>
                     <td class='table__td'>{{ tr.recorded_by }}</td>
-                {% endfor %}
-                <div class='space-2rem'></div>
+                </tr>
             {% endfor %}
-        </table>
-    </div>
+        {% endfor %}
+    </table>
 </div>
 
 {% endblock content %}

@@ -97,7 +97,7 @@ Getting Started (This step generated from cookiecutter)
 
 - Upgrade packaging tools [and redis, markdown]
 
-    env/bin/pip install --upgrade pip setuptools redis markdown
+    env/bin/pip install --upgrade pip setuptools redis markdown requests
 
 - Install the project in editable mode with its testing requirements.
 

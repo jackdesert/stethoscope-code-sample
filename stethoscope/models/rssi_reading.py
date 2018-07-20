@@ -8,6 +8,8 @@ from sqlalchemy import (
 )
 
 from collections import OrderedDict
+from datetime import datetime
+from datetime import timedelta
 from .meta import Base
 
 import redis
@@ -98,5 +100,17 @@ class RssiReading(Base):
             return f'{ round(sec/3600) } hrs ago'
         else:
             return f'{ round(sec/86400) } days ago'
+
+    @classmethod
+    def recent_badge_ids(cls, session):
+        one_minute_ago = datetime.now() - timedelta(seconds=60)
+        badge_ids = [ id for (id,) in session.query(RssiReading.badge_id).distinct().all() ]
+        rows = session.query(RssiReading.badge_id). \
+                           filter(RssiReading.timestamp > one_minute_ago). \
+                           distinct()
+
+        return [ id for (id,) in rows.all()]
+
+
 
 Index('rssi_readings__badge_id', RssiReading.badge_id)

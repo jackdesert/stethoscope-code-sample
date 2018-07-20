@@ -1,4 +1,5 @@
 var bindNewTrainingRun = function(){
+    'use strict'
     var running = false,
         inProgressTrainingRunIds = [],
         inProgressBadgeIds = [],
@@ -6,7 +7,8 @@ var bindNewTrainingRun = function(){
         startButton = document.getElementById('training-run-start-button'),
         startRuns = function(){
             var request = new XMLHttpRequest(),
-                path = '/training_runs/bulk_start'
+                path = '/training_runs/bulk_start',
+                payload
 
             // Set top-level-variables
             inProgressRoomId   = selectedRoomId()
@@ -30,7 +32,7 @@ var bindNewTrainingRun = function(){
                     response = this.response
                     responseHash = JSON.parse(response)
                     running = true
-                    inProgressTrainingRunIds = responseHash.training_run_ids,
+                    inProgressTrainingRunIds = responseHash.training_run_ids
                     setButtonText()
                     // Fetch stats manually so user can see them immediately
                     fetchStats()
@@ -110,6 +112,7 @@ var bindNewTrainingRun = function(){
                     responseHash = JSON.parse(response)
                     displayResultsTable()
                     setInProgressReadings(responseHash.in_progress)
+                    setInProgressTotal(responseHash.in_progress_total)
                     setCompletedReadings(responseHash.completed)
                     setTotalReadings(responseHash.total)
                 } else {
@@ -210,12 +213,17 @@ var bindNewTrainingRun = function(){
 
             var div,
                 badgeId
-            for (var badgeId in hash){
+            for (badgeId in hash){
                 if (hash.hasOwnProperty(badgeId)){
                     div = document.getElementById('num-readings-for-badge-' + badgeId)
                     div.innerHTML = hash[badgeId]
                 }
             }
+        },
+
+        setInProgressTotal = function(total){
+            var div = document.getElementById('in-progress-total')
+            div.innerHTML = total
         },
 
         setCompletedReadings = function(value){

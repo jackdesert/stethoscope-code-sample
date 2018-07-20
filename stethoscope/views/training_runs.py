@@ -1,24 +1,36 @@
-from pyramid.response import Response
-from pyramid.view import view_config
-import pdb
 from ..models.training_run import TrainingRun
 from ..models.rssi_reading import RssiReading
+from ..models.util import bip_rooms
+
+from collections import defaultdict
 from datetime import datetime
+from pyramid.response import Response
+from pyramid.view import view_config
+
 import json
+import pdb
 
 
 @view_config(route_name='training_runs__index',
              renderer='../templates/training_runs__index.jinja2')
 def training_runs(request):
-    room_ids = [ id for (id,) in request.dbsession.query(TrainingRun.room_id).distinct().all() ]
     rooms = []
+    room_list = bip_rooms()
+    completed_runs_dict = defaultdict(list)
 
-    for room_id in room_ids:
-        total_readings = 0
-        training_runs = request.dbsession.query(TrainingRun).filter_by(room_id=room_id).all()
-        for t_run in training_runs:
-            total_readings += len(t_run.rssi_readings)
-        room = dict(id=room_id, training_runs=training_runs, total_readings=total_readings)
+    for tr in TrainingRun.completed(request.dbsession):
+        completed_runs_dict[tr.room_id].append(tr)
+
+    for room_id, room_name in room_list:
+        cruns = completed_runs_dict[room_id]
+        room_reading_count = 0
+        for crun in cruns:
+            # This will set crun.count_rssi_readings_memoized
+            # so we can refer to it in the template
+            count = crun.count_rssi_readings(request.dbsession, True)
+            room_reading_count += count
+        room = dict(id=room_id, name=room_name,
+                    completed_runs=cruns, reading_count=room_reading_count)
         rooms.append(room)
 
     return dict(rooms=rooms)
@@ -28,10 +40,10 @@ def training_runs(request):
 @view_config(route_name='training_runs__new',
              renderer='../templates/training_runs__new.jinja2')
 def training_runs__new(request):
-    room_ids = ['abc', 'def']
-    badge_ids = [ id for (id,) in request.dbsession.query(RssiReading.badge_id).distinct().all() ]
+    rooms = bip_rooms()
+    badge_ids = RssiReading.recent_badge_ids(request.dbsession)
 
-    return dict(room_ids=room_ids, badge_ids=badge_ids)
+    return dict(rooms=rooms, badge_ids=badge_ids)
 
 
 
@@ -79,7 +91,7 @@ def training_runs__bulk_end_view(request):
         return {'error': 'Please supply training_run_ids'}
 
     training_runs = request.dbsession.query(TrainingRun). \
-                    filter(TrainingRun.id.in_(training_run_ids)).all()
+                    filter(TrainingRun.id.in_(training_run_ids))
 
     # Manually set end_timestamp so they are synchronized
     now = datetime.now()
@@ -113,39 +125,24 @@ def training_runs__bulk_stats_view(request):
         return {'error': 'Please supply room_id'}
 
     output = { 'in_progress' : {},
+               'in_progress_total' : 0,
                'completed' : 0,
                'total' : 0 }
 
-    in_progress_training_runs = request.dbsession.query(TrainingRun). \
-                    filter(TrainingRun.id.in_(training_run_ids))
+    in_progress_training_runs = TrainingRun.with_ids(request.dbsession, training_run_ids)
+
     for t_run in in_progress_training_runs:
-        if t_run.end_timestamp:
-            request.response.status_code = 400
-            return {'error': f'Training run with id {t_run.id} has already ended'}
-        count = count_from_training_run(request.dbsession, t_run)
+        count = t_run.count_rssi_readings(request.dbsession, False)
         output['in_progress'][t_run.badge_id] = count
+        output['in_progress_total'] += count
         output['total'] += count
 
-    completed_training_runs = request.dbsession.query(TrainingRun). \
-                    filter_by(room_id=room_id). \
-                    filter(TrainingRun.end_timestamp.isnot(None))
+    completed_training_runs = TrainingRun.completed_for_room(request.dbsession, room_id)
 
     for t_run in completed_training_runs:
-        count = count_from_training_run(request.dbsession, t_run)
+        count = t_run.count_rssi_readings(request.dbsession, True)
         output['completed'] += count
         output['total'] += count
 
+
     return output
-
-def count_from_training_run(session, training_run):
-    # TODO Move logic to model (How do you do that, since you need the session
-    #                           to run queries?)
-    qq = session.query(RssiReading). \
-                    filter_by(badge_id=training_run.badge_id). \
-                    filter(RssiReading.timestamp > training_run.start_timestamp)
-
-    if training_run.end_timestamp:
-        qq = qq.filter(RssiReading.timestamp < training_run.end_timestamp)
-
-    return qq.count()
-
