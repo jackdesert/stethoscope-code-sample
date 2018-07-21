@@ -6,6 +6,7 @@ from sqlalchemy import desc
 
 from ..models import MyModel
 from ..models import RssiReading
+from ..models import TrainingRun
 
 from datetime import datetime
 
@@ -23,6 +24,12 @@ def my_view(request):
         return Response(db_err_msg, content_type='text/plain', status=500)
     return {'one': one, 'project': 'stethoscope'}
 
+
+@view_config(route_name='test', renderer='json')
+def test_view(request):
+    # This view is only here to easily test model code with an dbsession
+    data = TrainingRun.numpy_tensor(request.dbsession)
+    return data.tolist()
 
 
 

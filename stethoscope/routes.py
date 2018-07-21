@@ -8,6 +8,7 @@ def includeme(config):
     config.add_route('training_runs__bulk_end', '/training_runs/bulk_end')
     config.add_route('training_runs__bulk_stats', '/training_runs/bulk_stats')
     config.add_route('rssi_readings', '/rssi_readings', request_method='GET')
+    config.add_route('test', '/test')
     config.add_route('badge_show', '/badges/{id}', request_method='GET')
     config.add_route('badge_fetch', '/badges/{id}/fetch', request_method='GET')
     config.add_route('home', '/original_home')

@@ -6,10 +6,14 @@ from sqlalchemy import (
     Index,
     Integer,
     Text,
+    text,
 )
+from sqlalchemy.sql import func
+
 
 from .meta import Base
 from .rssi_reading import RssiReading
+import numpy as np
 import pdb
 
 
@@ -36,7 +40,8 @@ class TrainingRun(Base):
     def invalid(self):
         return not self.valid
 
-    def count_rssi_readings(self, session, expected_complete):
+
+    def rssi_readings(self, session, expected_complete):
         # Raise exception if this TrainingRun is not in the
         # state you expect
         assert expected_complete == bool(self.end_timestamp)
@@ -48,12 +53,11 @@ class TrainingRun(Base):
         if expected_complete:
             readings = readings.filter(RssiReading.timestamp < self.end_timestamp)
 
-        self.count_rssi_readings_memoized = readings.count()
+        return readings
+
+    def count_rssi_readings(self, session, expected_complete):
+        self.count_rssi_readings_memoized = self.rssi_readings().count()
         return self.count_rssi_readings_memoized
-
-
-
-
 
     def print(self):
         print(f'id: {self.id}')
@@ -74,3 +78,111 @@ class TrainingRun(Base):
     @classmethod
     def completed(cls, session):
         return session.query(cls).filter(cls.end_timestamp.isnot(None))
+
+    @classmethod
+    def distinct_room_ids(cls, session):
+        room_ids = [ id for (id, ) in session.query(TrainingRun.room_id).distinct().all() ]
+        # Sort room_ids so they always show up in the same order
+        room_ids.sort()
+        return room_ids
+
+    @classmethod
+    def distinct_beacon_ids(cls, session):
+        # This returns beacon_ids ONLY from rssi readings that are
+        # attached to completed training runs
+        beacon_ids = set()
+        reading_ids = cls.rssi_reading_ids_from_all_completed_training_runs(session)
+        qobjects = [RssiReading.beacon_1_id,
+                    RssiReading.beacon_2_id,
+                    RssiReading.beacon_3_id]
+        for qq in qobjects:
+            rows = session.query(qq).filter(RssiReading.id.in_(reading_ids)).distinct()
+            for (id,) in rows:
+                beacon_ids.add(id)
+        return sorted(list(beacon_ids))
+
+
+
+
+    @classmethod
+    def rssi_reading_ids_from_all_completed_training_runs(cls, session):
+        sql = '''SELECT rssi_readings.id FROM rssi_readings
+                  JOIN training_runs
+                    ON rssi_readings.badge_id = training_runs.badge_id
+                  WHERE  training_runs.end_timestamp IS NOT NULL
+                    AND  rssi_readings.timestamp BETWEEN
+                                                        training_runs.start_timestamp
+                                                        AND
+                                                        training_runs.end_timestamp;
+              '''
+
+        rows = session.query(RssiReading.id).from_statement(text(sql))
+        return [id for (id,) in rows]
+
+
+    @classmethod
+    def numpy_tensor(cls, session):
+        room_ids = cls.distinct_room_ids(session)
+        beacon_ids = cls.distinct_beacon_ids(session)
+        distinct_beacon_count = len(beacon_ids)
+        reading_ids = cls.rssi_reading_ids_from_all_completed_training_runs(session)
+        num_readings = len(reading_ids)
+        reading_ids_set = set(reading_ids)
+
+        # Normalize Data, part 1
+        max_strength = session.query(func.max(RssiReading.beacon_1_strength)).scalar()
+        mins = session.query(func.min(RssiReading.beacon_1_strength),
+                             func.min(RssiReading.beacon_2_strength),
+                             func.min(RssiReading.beacon_3_strength))
+
+        # Use padding near zero so no actual readings are conflated with zero
+        min_padding = 10
+        min_strength = min(mins[0]) - min_padding
+
+
+
+        data = np.zeros((num_readings, distinct_beacon_count), dtype='float')
+
+
+        index = 0
+        for t_run in cls.completed(session):
+            for reading in t_run.rssi_readings(session, True):
+                reading_ids_set.remove(reading.id)
+                if reading.beacon_1_id:
+                    beacon_index = beacon_ids.index(reading.beacon_1_id)
+                    data[index][beacon_index] = reading.beacon_1_strength - min_strength
+                if reading.beacon_2_id:
+                    beacon_index = beacon_ids.index(reading.beacon_2_id)
+                    data[index][beacon_index] = reading.beacon_2_strength - min_strength
+                if reading.beacon_3_id:
+                    beacon_index = beacon_ids.index(reading.beacon_3_id)
+                    data[index][beacon_index] = reading.beacon_3_strength - min_strength
+
+                index += 1
+
+        # Verify that each reading_id was added to `data` exactly once
+        # by checking that `reading_ids_set` is now empty.
+        # This is to make sure that each reading only belongs to a single
+        # TrainingRun
+        # and is a stronger check than simply verifying that
+        #   len(reading_ids) == `the number of times the inner loop runs`
+        assert reading_ids_set == set()
+
+
+
+        # Normalize Data, part 2
+        strength_range = max_strength - min_strength
+        data /= strength_range
+
+
+        return data
+
+
+
+
+
+
+
+
+
+

@@ -95,9 +95,9 @@ Getting Started (This step generated from cookiecutter)
     # because this project uses f-strings
     python3 -m venv env
 
-- Upgrade packaging tools [and redis, markdown]
+- Upgrade packaging tools [and specific packages]
 
-    env/bin/pip install --upgrade pip setuptools redis markdown requests
+    env/bin/pip install --upgrade pip setuptools redis markdown requests numpy
 
 - Install the project in editable mode with its testing requirements.
 

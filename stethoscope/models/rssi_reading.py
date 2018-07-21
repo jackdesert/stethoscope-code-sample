@@ -113,4 +113,6 @@ class RssiReading(Base):
 
 
 
+
+
 Index('rssi_readings__badge_id', RssiReading.badge_id)
