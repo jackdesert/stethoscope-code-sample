@@ -245,6 +245,26 @@ Some things to address before going live in production:
     - what about site24x7
 
 
+Deep Learning Considerations: BASE RATE
+---------------------------------------
+
+Initially I thought this was a class-balanced classification problem.
+However, let's think about the base rate in terms of David x.
+Most of the time, a resident will be in their suite. (That's the base rate.)
+So in light of new information from a location sensor (information that is
+only somewhat reliable), it makes sense to use a Bayes xxx (classifier?)
+to add that information in.
+
+Example:
+  * Judy is in her room 90% of the time (The base rate).
+  * Our sensor says she is in her room (Classify: her suite)
+  * Our sensor predicts equal likelihood of her being in her room
+    vs her being in the room next to hers. (Classify: her suite)
+  * Our sensor predicts that it's twice as likely that she's in the
+    kitchen than in her suite (Now this is a tough call. How often is she
+    actually in the kitchen?)
+
+
 
 
 BACKLOG

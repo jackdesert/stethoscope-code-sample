@@ -463,7 +463,7 @@ class TestTrainingRunBulkStats(BaseTest):
 
     def params(self):
             return dict(room_id='room_a',
-                        in_progress_training_run_ids=self.training_run_ids)
+                        training_run_ids=self.training_run_ids)
 
 
     def test_happy_path(self):
@@ -478,6 +478,7 @@ class TestTrainingRunBulkStats(BaseTest):
         self.assertEqual(req.response.status_code, 200)
         expected = { 'in_progress': { 'badge_1': 2,
                                       'badge_2': 0, },
+                     'in_progress_total': 2,
                      'completed': 2,
                      'total': 4 }
 

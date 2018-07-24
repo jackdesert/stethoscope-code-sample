@@ -56,7 +56,7 @@ class TrainingRun(Base):
         return readings
 
     def count_rssi_readings(self, session, expected_complete):
-        self.count_rssi_readings_memoized = self.rssi_readings().count()
+        self.count_rssi_readings_memoized = self.rssi_readings(session, expected_complete).count()
         return self.count_rssi_readings_memoized
 
     def print(self):
