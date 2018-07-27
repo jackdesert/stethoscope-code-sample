@@ -9,8 +9,8 @@ Type=simple
 User=ubuntu
 Group=www-data
 WorkingDirectory=/home/ubuntu/stethoscope
+Environment='TZ=America/Los_Angeles'
 
-#ExecStart=/bin/bash -lc '/home/ubuntu/stethoscope/env/bin/pserve production.ini'
 ExecStart=/home/ubuntu/stethoscope/env/bin/pserve production.ini
 
 TimeoutSec=30

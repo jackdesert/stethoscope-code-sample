@@ -164,6 +164,21 @@ Testing
 
 
 
+Timezone
+--------
+
+Database timestamps are naive. That is, they are set without timezone information.
+
+However, Python respects the `TZ` environment variable.
+
+Therefore, if you want your naive database timestamps to match the clock
+in a particular timzezone (Pacific is easiest for us), just set the `TZ`
+environment variable.
+
+Set it in your systemd unit file, if you run from systemd.
+Set it in your ~/.bashrc if you invoke manually.
+
+
 Performance Load Testing
 ------------------------
 
