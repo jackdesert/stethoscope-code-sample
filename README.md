@@ -272,7 +272,6 @@ BACKLOG
 
   * Find out where timezone is set for database
     - at one point new readings were showing up as "7 hours ago"
-  * Make it clear which page you are on
   * Think about ways of visualizing the data coming in
     - allow download of sqlite database?
   * Architect where button press data will go. Elitecarerails?

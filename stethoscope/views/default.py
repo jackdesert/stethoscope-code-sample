@@ -4,6 +4,7 @@ from pyramid.view import view_config
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy import desc
 
+from ..models.util import PiTracker
 from ..models import MyModel
 from ..models import RssiReading
 from ..models import TrainingRun
@@ -47,6 +48,7 @@ def rssi_readings_view(request):
 @view_config(route_name='create_rssi_reading',
              renderer='json')
 def haberdasher(request):
+    track_pi(request)
     reading = RssiReading(**rssi_reading_params(request))
     if reading.invalid:
         request.response.status_code = 400
@@ -77,6 +79,10 @@ def rssi_reading_params(request):
     return output
 
 
+def track_pi(request):
+    params = json.loads(request.body)
+    pi_id = params.get('pi_id')
+    PiTracker.record(pi_id)
 
 
 
