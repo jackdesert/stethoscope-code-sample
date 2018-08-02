@@ -16,6 +16,7 @@ import redis
 import pdb
 
 class RssiReading(Base):
+
     __tablename__ = 'rssi_readings'
     id = Column(Integer, primary_key=True)
     badge_id    = Column(Text, nullable=False)
@@ -36,6 +37,8 @@ class RssiReading(Base):
 
     REDIS = redis.StrictRedis(host='localhost', port=6379, db=0)
     DEDUP_PERIOD_IN_MILLISECONDS = 4500
+
+    RECENT_SECONDS = 60
 
     @property
     def valid(self):
@@ -103,7 +106,7 @@ class RssiReading(Base):
 
     @classmethod
     def recent_badge_ids(cls, session):
-        one_minute_ago = datetime.now() - timedelta(seconds=60)
+        one_minute_ago = datetime.now() - timedelta(seconds=cls.RECENT_SECONDS)
         badge_ids = [ id for (id,) in session.query(RssiReading.badge_id).distinct().all() ]
         rows = session.query(RssiReading.badge_id). \
                            filter(RssiReading.timestamp > one_minute_ago). \
