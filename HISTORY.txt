@@ -7,3 +7,4 @@ HISTORY
 2018-07-12 Load testing against sqlite showed 400req/sec (20/sec were database writes)
 2018-07-16 Deployed smoothie and new site styling
 2018-07-24 Deployed the ability to create TrainingRun objects
+2018-08-16 Deployed Slack Integration a1f8583f

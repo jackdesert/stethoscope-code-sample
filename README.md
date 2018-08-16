@@ -205,6 +205,14 @@ available at https://github.com/jackdesert/smoothie/blob/display_series_label_in
 See the pull request at https://github.com/joewalnes/smoothie/pull/107
 
 
+
+Slack Integration
+-----------------
+
+If the environment variable POST_TO_SLACK is set, any unhandled exceptions
+will be handled by the custom exception view defined in stethoscope/views/exception.py.
+
+
 ---
 ---
 ---
