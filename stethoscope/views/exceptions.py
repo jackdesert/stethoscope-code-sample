@@ -36,4 +36,6 @@ if os.environ.get('POST_TO_SLACK'):
 
         requests.post(url, json=payload, timeout=1)
 
-        return Response(status_int=500, content_type=request.content_type)
+        return Response(status_int=500, 
+                        content_type=request.content_type,
+                        json_body=dict(error='Internal Server Error'))
