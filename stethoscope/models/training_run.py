@@ -94,7 +94,9 @@ class TrainingRun(Base):
         reading_ids = cls.rssi_reading_ids_from_all_completed_training_runs(session)
         qobjects = [RssiReading.beacon_1_id,
                     RssiReading.beacon_2_id,
-                    RssiReading.beacon_3_id]
+                    RssiReading.beacon_3_id,
+                    RssiReading.beacon_4_id,
+                    RssiReading.beacon_5_id]
         for qq in qobjects:
             rows = session.query(qq).filter(RssiReading.id.in_(reading_ids)).distinct()
             for (id,) in rows:
@@ -133,7 +135,9 @@ class TrainingRun(Base):
         max_strength = session.query(func.max(RssiReading.beacon_1_strength)).scalar()
         mins = session.query(func.min(RssiReading.beacon_1_strength),
                              func.min(RssiReading.beacon_2_strength),
-                             func.min(RssiReading.beacon_3_strength))
+                             func.min(RssiReading.beacon_3_strength),
+                             func.min(RssiReading.beacon_4_strength),
+                             func.min(RssiReading.beacon_5_strength))
 
         # Use padding near zero so no actual readings are conflated with zero
         min_padding = 10
@@ -157,6 +161,12 @@ class TrainingRun(Base):
                 if reading.beacon_3_id:
                     beacon_index = beacon_ids.index(reading.beacon_3_id)
                     data[index][beacon_index] = reading.beacon_3_strength - min_strength
+                if reading.beacon_4_id:
+                    beacon_index = beacon_ids.index(reading.beacon_4_id)
+                    data[index][beacon_index] = reading.beacon_4_strength - min_strength
+                if reading.beacon_5_id:
+                    beacon_index = beacon_ids.index(reading.beacon_5_id)
+                    data[index][beacon_index] = reading.beacon_5_strength - min_strength
 
                 index += 1
 

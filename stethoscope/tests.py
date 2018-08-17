@@ -84,7 +84,7 @@ class TestHaberdasher(BaseTest):
         # it is sorting *by value*
         return dict(badge_id='badge_0',
                     pi_id='pi_0',
-                    beacons=dict(a=10, b=30, d=20, e=40, c=50))
+                    beacons=dict(a=10, b=30, d=20, e=40, c=50, f=0))
 
 
     def test_ordered_beacons(self):
@@ -99,10 +99,14 @@ class TestHaberdasher(BaseTest):
                                 'beacon_1_id': 'c',
                                 'beacon_2_id': 'e',
                                 'beacon_3_id': 'b',
+                                'beacon_4_id': 'd',
+                                'beacon_5_id': 'a',
                                 'beacon_1_strength': 50,
                                 'beacon_2_strength': 40,
-                                'beacon_3_strength': 30},
-                          'Returns 3 of 5 in sorted order')
+                                'beacon_3_strength': 30,
+                                'beacon_4_strength': 20,
+                                'beacon_5_strength': 10},
+                          'Returns 5 of 6 in sorted order')
 
     def test_ordered_beacons_only_two(self):
         from .views.default import haberdasher
@@ -113,6 +117,7 @@ class TestHaberdasher(BaseTest):
         del params['beacons']['c']
         del params['beacons']['e']
         del params['beacons']['a']
+        del params['beacons']['f']
         req.body = json.dumps(params)
         info = haberdasher(req)
         self.assertEqual(info, {'badge_id': 'badge_0',

@@ -74,7 +74,7 @@ def rssi_reading_params(request):
         output[f'beacon_{counter}_id']       = beacon_id
         output[f'beacon_{counter}_strength'] = beacon_strength
         counter += 1
-        if counter > 3:
+        if counter > 5:
             break
     return output
 

@@ -44,7 +44,9 @@ def badge_fetch_timeseries(request):
     for rr in readings:
         beacons = {rr.beacon_1_id : rr.beacon_1_strength,
                    rr.beacon_2_id : rr.beacon_2_strength,
-                   rr.beacon_3_id : rr.beacon_3_strength}
+                   rr.beacon_3_id : rr.beacon_3_strength,
+                   rr.beacon_4_id : rr.beacon_4_strength,
+                   rr.beacon_5_id : rr.beacon_5_strength}
         packet = dict(id=rr.id, timestamp=str(rr.timestamp), beacons=beacons)
         packets.append(packet)
 

@@ -23,9 +23,13 @@ class RssiReading(Base):
     beacon_1_id = Column(Text)
     beacon_2_id = Column(Text)
     beacon_3_id = Column(Text)
+    beacon_4_id = Column(Text)
+    beacon_5_id = Column(Text)
     beacon_1_strength = Column(Integer)
     beacon_2_strength = Column(Integer)
     beacon_3_strength = Column(Integer)
+    beacon_4_strength = Column(Integer)
+    beacon_5_strength = Column(Integer)
     # TODO Do we really need to store pi_id with this model?
     pi_id       = Column(Text, nullable=False)
     timestamp   = Column(DateTime, default=datetime.now)
@@ -33,7 +37,9 @@ class RssiReading(Base):
     # Note badge_id is included, but not pi_id because we will get the
     # same payload from multiple pis, and we only need it from one
     DEDUP_FIELDS = ('badge_id', 'beacon_1_id', 'beacon_2_id', 'beacon_3_id',
-                    'beacon_1_strength', 'beacon_2_strength', 'beacon_3_strength')
+                    'beacon_4_id', 'beacon_5_id',
+                    'beacon_1_strength', 'beacon_2_strength', 'beacon_3_strength',
+                    'beacon_4_strength', 'beacon_5_strength')
 
     REDIS = redis.StrictRedis(host='localhost', port=6379, db=0)
     DEDUP_PERIOD_IN_MILLISECONDS = 4500
@@ -66,6 +72,8 @@ class RssiReading(Base):
         print(f'  {self.beacon_1_id}: {self.beacon_1_strength}')
         print(f'  {self.beacon_2_id}: {self.beacon_2_strength}')
         print(f'  {self.beacon_3_id}: {self.beacon_3_strength}')
+        print(f'  {self.beacon_4_id}: {self.beacon_4_strength}')
+        print(f'  {self.beacon_5_id}: {self.beacon_5_strength}')
         print(f'timestamp: {self.timestamp}')
 
     @property
