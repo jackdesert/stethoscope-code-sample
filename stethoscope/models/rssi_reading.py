@@ -42,7 +42,9 @@ class RssiReading(Base):
                     'beacon_4_strength', 'beacon_5_strength')
 
     REDIS = redis.StrictRedis(host='localhost', port=6379, db=0)
-    DEDUP_PERIOD_IN_MILLISECONDS = 4500
+
+    # See doc/deduplication_scheme.md
+    DEDUP_PERIOD_IN_MILLISECONDS = 5500
 
     RECENT_SECONDS = 60
 

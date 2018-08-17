@@ -2,7 +2,7 @@ Deduplication Scheme
 ====================
 
 We expect to receive duplicate payloads in subsequent advertisements
-because the badge transmits the same payload five times.
+because the badge transmits the same payload six times.
 
 Goal: Only save the advertisement once.
 
@@ -13,14 +13,14 @@ Background
 
 Advertisements are coming in at approximately 1-second interval
 (See doc/measurement_window.md)
-and the update window is 5 seconds, we want a deduplication scheme
+and the update window is 6 seconds, we want a deduplication scheme
 that gives us good odds of eliminating duplicates.
 
 
 Dedup Period
 ------------
 
-A time of 4.5 seconds is chosen as the optimal dedup_period.
+A time of "0.5 seconds less than the update window" is chosen as the optimal dedup_period.
 
 Let P_d be the dedup period
 Let P_u be the update period

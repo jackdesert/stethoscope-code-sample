@@ -180,7 +180,7 @@ class TestRssiReadingDuplicate(BaseTest):
 
     def test_with_literal_delays(self):
         import time
-        first_delay = 4.4
+        first_delay = 5.4
         second_delay = 0.2
 
         rr = self.reading()

@@ -8,3 +8,4 @@ HISTORY
 2018-07-16 Deployed smoothie and new site styling
 2018-07-24 Deployed the ability to create TrainingRun objects
 2018-08-16 Deployed Slack Integration a1f8583f
+2018-08-17 Deployed 5 beacons per RssiReading 9f9167

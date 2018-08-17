@@ -39,7 +39,7 @@ var initiateBadgeSmoothie = function(id, serverTime, initialMaxId){
     var lines = {}
     //var line1 = new TimeSeries()
     //var line2 = new TimeSeries()
-    var delay = 6000
+    var delay = 7000
 
     var maxId = initialMaxId
 
@@ -104,7 +104,7 @@ var initiateBadgeSmoothie = function(id, serverTime, initialMaxId){
             var line = lines[beaconId],
                 add = false,
                 lastTimestamp,
-                allowableGapInMilliseconds = 5500,
+                allowableGapInMilliseconds = 6500,
                 newColor
 
             if (line === undefined){
