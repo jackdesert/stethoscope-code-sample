@@ -152,22 +152,11 @@ class TrainingRun(Base):
         for t_run in cls.completed(session):
             for reading in t_run.rssi_readings(session, True):
                 reading_ids_set.remove(reading.id)
-                if reading.beacon_1_id:
-                    beacon_index = beacon_ids.index(reading.beacon_1_id)
-                    data[index][beacon_index] = reading.beacon_1_strength - min_strength
-                if reading.beacon_2_id:
-                    beacon_index = beacon_ids.index(reading.beacon_2_id)
-                    data[index][beacon_index] = reading.beacon_2_strength - min_strength
-                if reading.beacon_3_id:
-                    beacon_index = beacon_ids.index(reading.beacon_3_id)
-                    data[index][beacon_index] = reading.beacon_3_strength - min_strength
-                if reading.beacon_4_id:
-                    beacon_index = beacon_ids.index(reading.beacon_4_id)
-                    data[index][beacon_index] = reading.beacon_4_strength - min_strength
-                if reading.beacon_5_id:
-                    beacon_index = beacon_ids.index(reading.beacon_5_id)
-                    data[index][beacon_index] = reading.beacon_5_strength - min_strength
-
+                for number in range(1, 6):
+                    beacon_id = getattr(reading, f'beacon_{number}_id')
+                    beacon_strength = getattr(reading, f'beacon_{number}_strength')
+                    if beacon_id:
+                        data[index][beacon_index] = beacon_strength - min_strength
                 index += 1
 
         # Verify that each reading_id was added to `data` exactly once

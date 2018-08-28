@@ -48,6 +48,8 @@ class RssiReading(Base):
 
     RECENT_SECONDS = 60
 
+    NULL_BEACON_STRENGTH = -128
+
     @property
     def valid(self):
         errors = []
