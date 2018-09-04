@@ -16,21 +16,11 @@ import json
 import operator
 
 
-@view_config(route_name='home', renderer='../templates/mytemplate.jinja2')
-def my_view(request):
-    try:
-        query = request.dbsession.query(MyModel)
-        one = query.filter(MyModel.name == 'one').first()
-    except DBAPIError:
-        return Response(db_err_msg, content_type='text/plain', status=500)
-    return {'one': one, 'project': 'stethoscope'}
-
-
 @view_config(route_name='test', renderer='json')
 def test_view(request):
     # This view is only here to easily test model code with an dbsession
-    data = TrainingRun.numpy_tensor(request.dbsession)
-    return data.tolist()
+    data, labels = TrainingRun.data_and_labels(request.dbsession)
+    return dict(data=data.tolist(), labels=labels.tolist())
 
 
 

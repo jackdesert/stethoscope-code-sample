@@ -123,9 +123,12 @@ class TrainingRun(Base):
 
 
     @classmethod
-    def numpy_tensor(cls, session):
+    def data_and_labels(cls, session):
         room_ids = cls.distinct_room_ids(session)
+        room_id_to_room_index = { rid : ridx for (ridx,rid) in enumerate(room_ids) }
+
         beacon_ids = cls.distinct_beacon_ids(session)
+        beacon_id_to_beacon_index = { bid : bidx for (bidx,bid) in enumerate(beacon_ids) }
         distinct_beacon_count = len(beacon_ids)
         reading_ids = cls.rssi_reading_ids_from_all_completed_training_runs(session)
         num_readings = len(reading_ids)
@@ -146,6 +149,7 @@ class TrainingRun(Base):
 
 
         data = np.zeros((num_readings, distinct_beacon_count), dtype='float')
+        labels = np.zeros(num_readings, dtype='int8')
 
 
         index = 0
@@ -156,7 +160,10 @@ class TrainingRun(Base):
                     beacon_id = getattr(reading, f'beacon_{number}_id')
                     beacon_strength = getattr(reading, f'beacon_{number}_strength')
                     if beacon_id:
+                        beacon_index = beacon_id_to_beacon_index[beacon_id]
                         data[index][beacon_index] = beacon_strength - min_strength
+                room_index = room_id_to_room_index[t_run.room_id]
+                labels[index] = room_index
                 index += 1
 
         # Verify that each reading_id was added to `data` exactly once
@@ -174,14 +181,9 @@ class TrainingRun(Base):
         data /= strength_range
 
 
-        return data
-
-
-
-
-
-
-
-
-
-
+        # `data` is vectorized because that is the best way I know of to
+        # return the data as a numpy array
+        #
+        # `labels` is not vectorized, but will need to be vectorized before
+        # it is fed into the keras model
+        return data, labels
