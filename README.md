@@ -97,7 +97,7 @@ Getting Started (This step generated from cookiecutter)
 
 - Upgrade packaging tools [and specific packages]
 
-    env/bin/pip install --upgrade pip setuptools redis markdown requests numpy
+    env/bin/pip install --upgrade pip setuptools redis markdown requests numpy keras tensorflow
 
 - Install the project in editable mode with its testing requirements.
 
