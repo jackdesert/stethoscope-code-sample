@@ -25,3 +25,5 @@ test
 
 *.pytest_cache
 
+/keras/metadata.yml
+/keras/model.h5

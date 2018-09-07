@@ -180,10 +180,14 @@ class TrainingRun(Base):
         strength_range = max_strength - min_strength
         data /= strength_range
 
+        # Use this normalizer to normalize real-time data
+        # before passing it to keras.models.Sequential.predict()
+        normalizer = (strength_range, min_strength)
+
 
         # `data` is vectorized because that is the best way I know of to
         # return the data as a numpy array
         #
         # `labels` is not vectorized, but will need to be vectorized before
         # it is fed into the keras model
-        return data, labels
+        return data, labels, normalizer

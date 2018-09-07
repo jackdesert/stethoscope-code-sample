@@ -3,7 +3,12 @@
 
 # Invoke:
 #    cd path/to/stethoscope
+#
+#    # Train model
 #    env/bin/python stethoscope/models/neural_network.py
+#
+#    # Train model and save to disk
+#    env/bin/python stethoscope/models/neural_network.py --save
 
 
 import pdb
@@ -17,6 +22,8 @@ from keras.utils.np_utils import to_categorical
 from stethoscope.models.training_run import TrainingRun
 
 class NeuralNetwork:
+    MODEL_FILEPATH = 'keras/model.h5'
+    METADATA_FILEPATH = 'keras/metadata.yml'
 
     def __init__(self, dbsession):
         self.dbsession = dbsession
@@ -26,16 +33,21 @@ class NeuralNetwork:
         self.data_vectorized = None
         self.labels_one_hot = None
         self.history = None
+        self.normalizer = None
 
     def train(self):
         self._fetch_data_and_labels()
         self._build_model()
         self._train_model()
 
+    def write_to_disk(self):
+        self.model.save(self.MODEL_FILEPATH)
+        with open(self.METADATA_FILEPATH, 'wb') as f:
+            pickle.dump(self.normalizer, f)
 
     def _fetch_data_and_labels(self):
         # Fetch
-        data_vectorized, labels = TrainingRun.data_and_labels(self.dbsession)
+        data_vectorized, labels, normalizer = TrainingRun.data_and_labels(self.dbsession)
         labels_one_hot = to_categorical(labels)
 
 
@@ -53,6 +65,7 @@ class NeuralNetwork:
                                                  axis=0,
                                                  return_index=True)
         labels_one_hot = labels_one_hot[dedup_index]
+        self.normalizer = normalizer
 
 
         # Shuffle two numpy arrays in unison
@@ -89,22 +102,74 @@ class NeuralNetwork:
         train_labels = self.labels_one_hot[:halfway]
         validation_labels = self.labels_one_hot[halfway:]
 
-        self.history = self.model.fit(train_samples,
-                                      train_labels,
+        augmented_samples, augmented_labels = self._augmented(train_samples, train_labels)
+
+        self.history = self.model.fit(augmented_samples,
+                                      augmented_labels,
                                       epochs=20,
                                       batch_size=512,
                                       validation_data=(validation_samples, validation_labels))
+
+    def _augmented_single(self, sample):
+        # Adjust gain in two ways:
+        #  1. Together
+        #  2. Separately
+
+        together_scale = 0.2
+        separate_scale = 0.1
+
+        together_gain = np.random.normal(loc=1, scale=together_scale)
+        new_sample = sample * together_gain
+
+        for index in range(len(sample)):
+            separate_gain = np.random.normal(loc=1, scale=separate_scale)
+            new_sample[index] *= separate_gain
+
+        return new_sample
+
+
+    def _augmented(self, samples, labels):
+
+        multiplier = 10000
+
+        lsh1, lsh2 = labels.shape
+        output_labels_shape = (lsh1 * multiplier, lsh2)
+        output_labels = np.zeros(output_labels_shape, dtype=labels.dtype)
+
+        ssh1, ssh2 = samples.shape
+        output_samples_shape = (ssh1 * multiplier, ssh2)
+        output_samples = np.zeros(output_samples_shape, dtype=samples.dtype)
+
+        output_index = 0
+        for input_index in range(len(samples)):
+            sample = samples[input_index]
+            label  = labels[input_index]
+            for i in range(multiplier):
+                output_samples[output_index] = self._augmented_single(sample)
+                output_labels[output_index] = label
+                output_index += 1
+        assert(output_index == len(output_samples))
+        return output_samples, output_labels
+
 
 
 if __name__ == '__main__':
 
 
     from pyramid.paster import bootstrap
+    import sys
+    import pickle
+
+    save = False
+    if (len(sys.argv) > 1) and (sys.argv[1] == '--save'):
+        save = True
 
     with bootstrap('/home/jd/r/stethoscope/development.ini') as env:
         request = env['request']
         request.tm.begin()
         net = NeuralNetwork(request.dbsession)
         net.train()
-        a = 5
+        if save:
+            net.write_to_disk()
+
 
