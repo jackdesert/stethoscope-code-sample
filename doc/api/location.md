@@ -15,8 +15,10 @@ Payload
     }
 
 * `priors` is optional. That is, this endpoint may be called with no payload at all.
+* If `priors` are included, you must provide a weight for each room which had training runs when the keras model was trained.
 * Ordering of the rooms does not matter.
 * Parameters not listed in the payload above will be ignored.
+* Weights need not add up to 1.0.
 
 
 Request Data Types
@@ -46,16 +48,19 @@ Response
 --------
 
     { 'raw':   [
-                 // Highest Probability First
-                 [<room_id>, <probability>, <room_name>],
-                 [<room_id>, <probability>, <room_name>],
-                 [<room_id>, <probability>, <room_name>],
+                 // Highest Raw Probability First
+                 // Raw Probabilities sum to 1.0
+                 [<room_id>, <raw_probability>, <room_name>],
+                 [<room_id>, <raw_probability>, <room_name>],
+                 [<room_id>, <raw_probability>, <room_name>],
                ],
       'bayes': [ // Bayes result is only present if "priors" is included in the request
-                 // Highest Probability First
-                 [<room_id>, <probability>, <room_name>, <prior_probability>],
-                 [<room_id>, <probability>, <room_name>, <prior_probability>],
-                 [<room_id>, <probability>, <room_name>, <prior_probability>],
+                 // Highest Bayes Probability First
+                 // Bayes Probabilities sum to 1.0
+                 // Bayes weights sum to 1.0
+                 [<room_id>, <bayes_probability>, <room_name>, <bayes_weight>],
+                 [<room_id>, <bayes_probability>, <room_name>, <bayes_weight>],
+                 [<room_id>, <bayes_probability>, <room_name>, <bayes_weight>],
                ]
     }
 
@@ -74,24 +79,30 @@ These priors are intended to represent how often a person is actually in a given
 It starts with the `raw` data, then applies Bayes` Theorem.
 
 
+
+
+Response Data Types
+-------------------
+
+* room_id: uuid (Only rooms present in TrainingRuns will be shown)
+* raw_probability: number between 0.0 and 1.0.
+* bayes_probability: number between 0.0 and 1.0.
+* room_name: string
+
+
+Algorithm
+---------
+
+Currently this endpoint uses the most recent RssiReading from that badge.
+
+
+
 ### Future Algorithms
 
 The response above shows the results of two distinct algorithms: `raw` and `bayes`.
 In the future, the payload may include more than just these two. Additional
 algorithms will follow the same pattern of [<room_id>, <probability>,
 <room_name>, ...]
-
-
-Response Data Types
--------------------
-
-* room_id: uuid
-* probability: number between 0.0 and 1.0. The room with the highest probability is shown first. Probabilities for each algorithm sum to 1.0.
-* room_name: string
-* prior_probability: number between 0.0 and 1.0. It's the same as the passed in `weight` for that room, but shown as a percentage of the total weights.
-
-
-
 
 
 

@@ -3,6 +3,7 @@ import redis
 import pdb
 
 def bip_rooms():
+    # TODO If these rooms change under foot---what does that do to our keras model?
     uri = 'https://bip.elitecare.com/api/stethoscope/rooms_insecure'
     data = requests.get(uri, timeout=10)
     return data.json()

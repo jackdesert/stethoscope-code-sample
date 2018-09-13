@@ -9,6 +9,9 @@
 #
 #    # Train model and save to disk
 #    env/bin/python stethoscope/models/neural_network.py --save
+#
+#    # Load model and metadata from disk
+#    env/bin/python stethoscope/models/neural_network.py --load
 
 
 import pdb
@@ -33,7 +36,7 @@ class NeuralNetwork:
         self.data_vectorized = None
         self.labels_one_hot = None
         self.history = None
-        self.normalizer = None
+        self.metadata = None
 
     def train(self):
         self._fetch_data_and_labels()
@@ -43,11 +46,11 @@ class NeuralNetwork:
     def write_to_disk(self):
         self.model.save(self.MODEL_FILEPATH)
         with open(self.METADATA_FILEPATH, 'wb') as f:
-            pickle.dump(self.normalizer, f)
+            pickle.dump(self.metadata, f)
 
     def _fetch_data_and_labels(self):
         # Fetch
-        data_vectorized, labels, normalizer = TrainingRun.data_and_labels(self.dbsession)
+        data_vectorized, labels, metadata = TrainingRun.data_and_labels(self.dbsession)
         labels_one_hot = to_categorical(labels)
 
 
@@ -65,7 +68,7 @@ class NeuralNetwork:
                                                  axis=0,
                                                  return_index=True)
         labels_one_hot = labels_one_hot[dedup_index]
-        self.normalizer = normalizer
+        self.metadata = metadata
 
 
         # Shuffle two numpy arrays in unison
@@ -160,16 +163,32 @@ if __name__ == '__main__':
     import sys
     import pickle
 
-    save = False
-    if (len(sys.argv) > 1) and (sys.argv[1] == '--save'):
-        save = True
+    # Defaults
+    train = False
+    save  = False
+    load  = False
 
-    with bootstrap('/home/jd/r/stethoscope/development.ini') as env:
-        request = env['request']
-        request.tm.begin()
-        net = NeuralNetwork(request.dbsession)
-        net.train()
-        if save:
-            net.write_to_disk()
+    if len(sys.argv) == 1:
+        train = True
+    elif sys.argv[1] == '--save':
+        train = True
+        save  = True
+    elif sys.argv[1] == '--load':
+        load = True
+
+    if train:
+        with bootstrap('/home/jd/r/stethoscope/development.ini') as env:
+            request = env['request']
+            request.tm.begin()
+            net = NeuralNetwork(request.dbsession)
+            net.train()
+            if save:
+                net.write_to_disk()
+                print('\nKeras model and metada written to disk')
+    if load:
+        model = models.load_model(NeuralNetwork.MODEL_FILEPATH)
+        metadata = pickle.load(open(NeuralNetwork.METADATA_FILEPATH, 'rb'))
+        pdb.set_trace()
+        a = 5
 
 

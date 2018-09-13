@@ -128,6 +128,13 @@ class RssiReading(Base):
 
         return [ id for (id,) in rows.all()]
 
+    @classmethod
+    def most_recent_from_badge(cls, session, badge_id):
+        row = session.query(cls).filter_by(badge_id=badge_id).order_by(cls.timestamp).limit(1)
+
+        return row[0]
+
+
 
 
 

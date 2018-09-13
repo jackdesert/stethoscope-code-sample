@@ -9,6 +9,7 @@ from sqlalchemy import (
     text,
 )
 from sqlalchemy.sql import func
+from collections import namedtuple
 
 
 from .meta import Base
@@ -16,6 +17,8 @@ from .rssi_reading import RssiReading
 import numpy as np
 import pdb
 
+# namedtuple must be defined outside the class so the unpickler can find it
+KerasMetadata = namedtuple('KerasMetadata', ['room_ids', 'beacon_id_to_beacon_index', 'strength_range', 'min_strength'])
 
 class TrainingRun(Base):
     __tablename__ = 'training_runs'
@@ -146,6 +149,15 @@ class TrainingRun(Base):
         min_padding = 10
         min_strength = min(mins[0]) - min_padding
 
+        # Normalize Data, part 2
+        strength_range = max_strength - min_strength
+
+        # Use this metadata to normalize real-time data
+        # before passing it to keras.models.Sequential.predict()
+        metadata = KerasMetadata(room_ids,
+                                 beacon_id_to_beacon_index,
+                                 strength_range,
+                                 min_strength)
 
 
         data = np.zeros((num_readings, distinct_beacon_count), dtype='float')
@@ -156,12 +168,10 @@ class TrainingRun(Base):
         for t_run in cls.completed(session):
             for reading in t_run.rssi_readings(session, True):
                 reading_ids_set.remove(reading.id)
-                for number in range(1, 6):
-                    beacon_id = getattr(reading, f'beacon_{number}_id')
-                    beacon_strength = getattr(reading, f'beacon_{number}_strength')
-                    if beacon_id:
-                        beacon_index = beacon_id_to_beacon_index[beacon_id]
-                        data[index][beacon_index] = beacon_strength - min_strength
+                vectorized_reading = NeuralNetworkHelper.vectorize_and_normalize_reading(reading,
+                                                                                         metadata)
+                data[index] = vectorized_reading
+
                 room_index = room_id_to_room_index[t_run.room_id]
                 labels[index] = room_index
                 index += 1
@@ -176,13 +186,6 @@ class TrainingRun(Base):
 
 
 
-        # Normalize Data, part 2
-        strength_range = max_strength - min_strength
-        data /= strength_range
-
-        # Use this normalizer to normalize real-time data
-        # before passing it to keras.models.Sequential.predict()
-        normalizer = (strength_range, min_strength)
 
 
         # `data` is vectorized because that is the best way I know of to
@@ -190,4 +193,11 @@ class TrainingRun(Base):
         #
         # `labels` is not vectorized, but will need to be vectorized before
         # it is fed into the keras model
-        return data, labels, normalizer
+        return data, labels, metadata
+
+
+
+# Loading this at the end of the file so that circular imports do not break it
+# See http://effbot.org/zone/import-confusion.htm
+
+from .neural_network_helper import NeuralNetworkHelper

@@ -240,6 +240,17 @@ payload: [{person_id: xxx, room_id: xxx}, ...]
 
 
 
+Train the Keras Model using TrainingRuns
+----------------------------------------
+
+Train but do not save:
+
+    env/bin/python stethoscope/models/neural_network.py
+
+Train and save to disk:
+
+    env/bin/python stethoscope/models/neural_network.py --save
+
 API
 ---
 
