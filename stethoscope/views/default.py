@@ -60,7 +60,8 @@ def rssi_reading_params(request):
     beacons = params.get('beacons') or {}
 
     # Strength of -128 indicates no beacon heard; Ignore these.
-    beacons = { k:v for (k,v) in beacons.items() if v != RssiReading.NULL_BEACON_STRENGTH }
+    # Strength of None probably means malformed payload
+    beacons = { k:v for (k,v) in beacons.items() if (v != None) and (v != RssiReading.NULL_BEACON_STRENGTH) }
     beacons_sorted = sorted(beacons.items(), key=operator.itemgetter(1), reverse=True)
 
     for beacon_id, beacon_strength in beacons_sorted:

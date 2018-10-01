@@ -40,31 +40,6 @@ class BaseTest(unittest.TestCase):
         Base.metadata.drop_all(self.engine)
 
 
-class TestMyViewSuccessCondition(BaseTest):
-
-    def setUp(self):
-        super(TestMyViewSuccessCondition, self).setUp()
-        self.init_database()
-
-        from .models import MyModel
-
-        model = MyModel(name='one', value=55)
-        self.session.add(model)
-
-    def test_passing_view(self):
-        from .views.default import my_view
-        info = my_view(dummy_request(self.session))
-        self.assertEqual(info['one'].name, 'one')
-        self.assertEqual(info['project'], 'stethoscope')
-
-
-class TestMyViewFailureCondition(BaseTest):
-
-    def test_failing_view(self):
-        from .views.default import my_view
-        info = my_view(dummy_request(self.session))
-        self.assertEqual(info.status_int, 500)
-
 
 ############  RssiReadings View Tests Written by Jack  #########################
 
@@ -86,6 +61,23 @@ class TestHaberdasher(BaseTest):
                     pi_id='pi_0',
                     beacons=dict(a=10, b=30, d=20, e=40, c=50, f=0))
 
+    def params_funky_beacons(self):
+        return dict(badge_id='badge_0',
+                    pi_id='pi_0',
+                    beacons=dict(a=10, b=None))
+
+    def test_funky_beacons(self):
+        from .views.default import haberdasher
+        import json
+
+        req = dummy_request(self.session)
+        req.body = json.dumps(self.params_funky_beacons())
+        info = haberdasher(req)
+        self.assertEqual(info, {'badge_id': 'badge_0',
+                                'pi_id': 'pi_0',
+                                'beacon_1_id': 'a',
+                                'beacon_1_strength': 10 },
+                          'Drops beacon "b" entirely')
 
     def test_ordered_beacons(self):
         from .views.default import haberdasher
