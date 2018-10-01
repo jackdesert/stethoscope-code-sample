@@ -159,6 +159,11 @@ class TestRssiReadingDuplicate(BaseTest):
 
         return reading
 
+    def test_valid_no_beacon_1_strength(self):
+        rr = self.reading()
+        rr.beacon_1_strength = None
+        self.assertFalse(rr.valid)
+
     def test_once(self):
         rr = self.reading()
         self.assertFalse(rr.duplicate)
@@ -247,7 +252,7 @@ class TestRssiReadingValidation(BaseTest):
 
     def validReading(self):
         from .models.rssi_reading import RssiReading
-        reading = RssiReading(badge_id='a', pi_id='b')
+        reading = RssiReading(badge_id='a', pi_id='b', beacon_1_id='c', beacon_1_strength=-20)
         return reading
 
     def test_happy_path(self):
