@@ -182,7 +182,6 @@ var initiateBadgeSmoothie = function(id, serverTime, initialMaxId){
     // Add to SmoothieChart
     //smoothie.addTimeSeries(line1)
     //smoothie.addTimeSeries(line2)
-    window.ee = lines
 
 
 }
