@@ -7,6 +7,7 @@ from ..models.neural_network_helper import NeuralNetworkHelper
 
 from collections import defaultdict
 from copy import deepcopy
+from keras import backend as keras_backend
 from keras import models
 import json
 import operator
@@ -28,11 +29,17 @@ def location_view(request):
         return dict(error=f'No RssiReadings received from badge {badge_id} in last {RssiReading.RECENT_SECONDS} seconds')
 
 
-    # Inflate Keras model
     reading = RssiReading.most_recent_from_badge(request.dbsession, badge_id)
-    model = models.load_model(NeuralNetwork.MODEL_FILEPATH)
     metadata = pickle.load(open(NeuralNetwork.METADATA_FILEPATH, 'rb'))
     reading_vectorized = NeuralNetworkHelper.vectorize_and_normalize_reading(reading, metadata)
+
+    # Clear Keras backend session so that Keras does not occasionally raise error:
+    #  "TypeError: Cannot interpret feed_dict key as Tensor"
+    # See https://github.com/jaungiers/Multidimensional-LSTM-BitCoin-Time-Series/issues/1#issuecomment-389609457
+    keras_backend.clear_session()
+
+    # Inflate Keras model
+    model = models.load_model(NeuralNetwork.MODEL_FILEPATH)
 
     # Nest it one deep so shape matches correctly
     reading_vectorized_2d = np.array([reading_vectorized])

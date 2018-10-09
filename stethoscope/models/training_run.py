@@ -103,7 +103,8 @@ class TrainingRun(Base):
         for qq in qobjects:
             rows = session.query(qq).filter(RssiReading.id.in_(reading_ids)).distinct()
             for (id,) in rows:
-                beacon_ids.add(id)
+                if id:
+                    beacon_ids.add(id)
         return sorted(list(beacon_ids))
 
 

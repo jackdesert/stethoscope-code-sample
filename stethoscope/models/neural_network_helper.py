@@ -19,8 +19,9 @@ class NeuralNetworkHelper:
             beacon_id = getattr(rssi_reading, f'beacon_{number}_id')
             beacon_strength = getattr(rssi_reading, f'beacon_{number}_strength')
             if beacon_id:
-                beacon_index = metadata.beacon_id_to_beacon_index[beacon_id]
-                output[beacon_index] = beacon_strength - metadata.min_strength
+                beacon_index = metadata.beacon_id_to_beacon_index.get(beacon_id)
+                if beacon_index:
+                    output[beacon_index] = beacon_strength - metadata.min_strength
 
         output /= metadata.strength_range
 
