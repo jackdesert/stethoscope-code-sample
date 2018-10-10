@@ -5,7 +5,6 @@ from sqlalchemy.exc import DBAPIError
 from sqlalchemy import desc
 
 from ..models.util import PiTracker
-from ..models import MyModel
 from ..models import RssiReading
 from ..models import TrainingRun
 

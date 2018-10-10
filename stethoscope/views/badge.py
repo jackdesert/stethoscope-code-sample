@@ -4,7 +4,6 @@ from pyramid.view import view_config
 #from sqlalchemy.exc import DBAPIError
 from sqlalchemy import desc
 
-#from ..models import MyModel
 from ..models import RssiReading
 
 from datetime import datetime

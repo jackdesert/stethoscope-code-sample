@@ -49,7 +49,6 @@ class TestHaberdasher(BaseTest):
         super(TestHaberdasher, self).setUp()
         self.init_database()
 
-        #from .models import MyModel
 
         #model = MyModel(name='one', value=55)
         #self.session.add(model)
