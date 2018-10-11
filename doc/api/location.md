@@ -1,11 +1,15 @@
 API: Location
 =============
 
+This endpoint works either via POST (allows you to send in priors)
+or GET (simple to use from a web page)
+
 POST /badges/:badge_id/location
+GET  /badges/:badge_id/location
 
 
-Payload
--------
+Payload (POST only)
+-------------------
 
     {
       'priors': [

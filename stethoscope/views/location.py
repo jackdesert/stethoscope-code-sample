@@ -16,6 +16,23 @@ import pickle
 import numpy as np
 
 
+
+
+
+# THIS issue appears to go away when using theano
+# Clear Keras backend session so that Keras does not occasionally raise error:
+#  "TypeError: Cannot interpret feed_dict key as Tensor"
+# See https://github.com/jaungiers/Multidimensional-LSTM-BitCoin-Time-Series/issues/1#issuecomment-389609457
+#keras_backend.clear_session()
+
+# Inflate Keras model outside the method so it doesn't get called during a request
+model = models.load_model(NeuralNetwork.MODEL_FILEPATH)
+bip_rooms_memoized = bip_rooms()
+
+
+
+
+
 # Predict which room is most likely based on the last RssiReading.
 # TODO Update to use the last several RssiReadings and return the most common answer
 # TODO move this code to a model
@@ -34,20 +51,13 @@ def location_view(request):
     metadata = pickle.load(open(NeuralNetwork.METADATA_FILEPATH, 'rb'))
     reading_vectorized, imposter_beacons = NeuralNetworkHelper.vectorize_and_normalize_reading(reading, metadata)
 
-    # Clear Keras backend session so that Keras does not occasionally raise error:
-    #  "TypeError: Cannot interpret feed_dict key as Tensor"
-    # See https://github.com/jaungiers/Multidimensional-LSTM-BitCoin-Time-Series/issues/1#issuecomment-389609457
-    keras_backend.clear_session()
-
-    # Inflate Keras model
-    model = models.load_model(NeuralNetwork.MODEL_FILEPATH)
 
     # Nest it one deep so shape matches correctly
     reading_vectorized_2d = np.array([reading_vectorized])
     prediction = model.predict(reading_vectorized_2d)
 
     # TODO Cache bip_rooms to reduce network calls
-    current_room_names_by_id = { rid: rname for (rid, rname) in bip_rooms() }
+    current_room_names_by_id = { rid: rname for (rid, rname) in bip_rooms_memoized }
     room_ids = metadata.room_ids
 
 

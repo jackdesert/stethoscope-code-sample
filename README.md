@@ -97,7 +97,7 @@ Getting Started (This step generated from cookiecutter)
 
 - Upgrade packaging tools [and specific packages]
 
-    env/bin/pip install --upgrade pip setuptools redis markdown requests numpy keras tensorflow
+    env/bin/pip install --upgrade pip setuptools redis markdown requests numpy keras theano
 
 - Install the project in editable mode with its testing requirements.
 
@@ -113,7 +113,7 @@ Getting Started (This step generated from cookiecutter)
 
 - Run your project.
 
-    env/bin/pserve development.ini
+    KERAS_BACKEND=theano env/bin/pserve development.ini --reload
 
 
 Redis
@@ -125,7 +125,7 @@ Docs are at https://github.com/andymccurdy/redis-py
 
 Nginx
 -----
-
+env/bin/pip install -e ".[testing]"
     cd /etc/nginx/sites-enabled
     sudo rm default
     sudo ln -s /home/ubuntu/stethoscope/config/bip-stethoscope-nginx.conf

@@ -29,3 +29,7 @@ A: The API is built in python, which uses underscore keys.
    So to make it easiest on the most number of users, it has been kept
    in underscore, even though JSON is commonly done in camel.
 
+Q: Why are you using theano as a backend?
+A: To get around this error that we get sometimes when we load a keras
+   model from disk: "TypeError: Cannot interpret feed_dict key as Tensor"
+
