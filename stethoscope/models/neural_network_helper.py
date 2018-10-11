@@ -3,6 +3,20 @@ import numpy as np
 import pickle
 import pdb
 
+class NoMatchingBeaconsError(Exception):
+    '''
+        If the beacons present in this RssiReading are disjoint from
+        the beacons that were used to train the keras model,
+        `vectorize_and_normalize_reading` would return a
+        numpy array of zeros. Instead, we raise this error.
+
+        Make sure the only beacons active in your house are the ones
+        used during keras model training. Otherwise your accuracy will suffer.
+    '''
+    # TODO alert engineers when /:badge_id/location is called that uses
+    # an RssiReading containing any beacons that were not present during training
+
+
 class NeuralNetworkHelper:
     @classmethod
     def vectorize_and_normalize_reading(cls, rssi_reading, metadata=None):
@@ -22,6 +36,9 @@ class NeuralNetworkHelper:
                 beacon_index = metadata.beacon_id_to_beacon_index.get(beacon_id)
                 if beacon_index:
                     output[beacon_index] = beacon_strength - metadata.min_strength
+
+        if np.unique(output).shape == (1,):
+            raise NoMatchingBeaconsError
 
         output /= metadata.strength_range
 

@@ -254,7 +254,10 @@ Train and save to disk:
 API
 ---
 
-    curl -k -X POST -H "Content-Type:application/json"  -i http://localhost:6543/rssi_readings   -d '{"badge_id":"1", "pi_id":"2", "beacons":{"a": -30, "b": -35, "c": -40} }'
+    curl -k -X POST -H "Content-Type:application/json"  -i http://localhost:6540/rssi_readings   -d '{"badge_id":"1", "pi_id":"2", "beacons":{"a": -30, "b": -35, "c": -40} }'
+
+
+    curl -k -X POST -H "Content-Type:application/json"  -i http://localhost:6540/badges/2/location  -d '{"badge_id":"1", "pi_id":"2", "beacons":{"a": -30, "b": -35, "c": -40} }'
 
 
 

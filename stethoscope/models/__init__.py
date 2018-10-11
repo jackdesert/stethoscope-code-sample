@@ -7,6 +7,8 @@ import zope.sqlalchemy
 # Base.metadata prior to any initialization routines
 from .rssi_reading import RssiReading  # flake8: noqa
 from .training_run import TrainingRun  # flake8: noqa
+from .neural_network import NeuralNetwork  # flake8: noqa
+from .neural_network_helper import NeuralNetworkHelper  # flake8: noqa
 
 # run configure_mappers after defining all of the models to ensure
 # all relationships can be setup
