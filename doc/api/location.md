@@ -61,7 +61,13 @@ Response
                  [<room_id>, <bayes_probability>, <room_name>, <bayes_weight>],
                  [<room_id>, <bayes_probability>, <room_name>, <bayes_weight>],
                  [<room_id>, <bayes_probability>, <room_name>, <bayes_weight>],
-               ]
+               ],
+      'reading': {'id': <integer>,
+                  'beacons': <array>,
+                  'timetamp': <string>,
+                  'pi_id': <string>,
+                  'badge_id': <string>,
+                  'imposter_beacons': <array>
     }
 
 
@@ -78,6 +84,11 @@ The `bayes` version takes into account the priors that were passed in.
 These priors are intended to represent how often a person is actually in a given room.
 It starts with the `raw` data, then applies Bayes` Theorem.
 
+### Reading
+
+`imposter_beacons` should be empty. If not, it means there is an active beacon that
+was not active during the keras model training. As such, this imposter beacon
+will displace actual readings and will worsen location accuracy.
 
 
 

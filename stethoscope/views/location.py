@@ -30,8 +30,9 @@ def location_view(request):
 
 
     reading = RssiReading.most_recent_from_badge(request.dbsession, badge_id)
+
     metadata = pickle.load(open(NeuralNetwork.METADATA_FILEPATH, 'rb'))
-    reading_vectorized = NeuralNetworkHelper.vectorize_and_normalize_reading(reading, metadata)
+    reading_vectorized, imposter_beacons = NeuralNetworkHelper.vectorize_and_normalize_reading(reading, metadata)
 
     # Clear Keras backend session so that Keras does not occasionally raise error:
     #  "TypeError: Cannot interpret feed_dict key as Tensor"
@@ -87,8 +88,19 @@ def location_view(request):
         output['bayes'] = bayes
 
 
+
     for algorithm, data in output.items():
         # Sort by probability
         data.sort(key=operator.itemgetter(1), reverse=True)
+
+
+    # Include information about the reading
+    output['reading'] = dict(id                = reading.id,
+                             pi_id             = reading.pi_id,
+                             badge_id          = reading.badge_id,
+                             beacons           = reading.beacons,
+                             vectorized        = [float(i) for i in reading_vectorized],
+                             timestamp         = str(reading.timestamp),
+                             imposter_beacons  = list(imposter_beacons),)
 
     return output

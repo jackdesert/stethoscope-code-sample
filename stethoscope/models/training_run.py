@@ -169,7 +169,7 @@ class TrainingRun(Base):
         for t_run in cls.completed(session):
             for reading in t_run.rssi_readings(session, True):
                 reading_ids_set.remove(reading.id)
-                vectorized_reading = NeuralNetworkHelper.vectorize_and_normalize_reading(reading,
+                vectorized_reading, _ = NeuralNetworkHelper.vectorize_and_normalize_reading(reading,
                                                                                          metadata)
                 data[index] = vectorized_reading
 

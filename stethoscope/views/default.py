@@ -15,11 +15,11 @@ import json
 import operator
 
 
-@view_config(route_name='test', renderer='json')
-def test_view(request):
-    # This view is only here to easily test model code with an dbsession
-    data, labels = TrainingRun.data_and_labels(request.dbsession)
-    return dict(data=data.tolist(), labels=labels.tolist())
+#@view_config(route_name='test', renderer='json')
+#def test_view(request):
+#    # This view is only here to easily test model code with an dbsession
+#    data, labels = TrainingRun.data_and_labels(request.dbsession)
+#    return dict(data=data.tolist(), labels=labels.tolist())
 
 
 

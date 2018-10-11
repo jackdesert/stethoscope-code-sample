@@ -27,6 +27,7 @@ class NeuralNetworkHelper:
                 metadata = pickle.load(f)
 
 
+        imposter_beacons = set()
         bmap = metadata.beacon_id_to_beacon_index
         output = np.zeros(len(bmap))
         for number in range(1, 6):
@@ -36,11 +37,13 @@ class NeuralNetworkHelper:
                 beacon_index = metadata.beacon_id_to_beacon_index.get(beacon_id)
                 if beacon_index:
                     output[beacon_index] = beacon_strength - metadata.min_strength
+                else:
+                    imposter_beacons.add(beacon_id)
 
         if np.unique(output).shape == (1,):
             raise NoMatchingBeaconsError
 
         output /= metadata.strength_range
 
-        return output
+        return output, imposter_beacons
 
