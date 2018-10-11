@@ -10,6 +10,7 @@ from sqlalchemy import (
 from collections import OrderedDict
 from datetime import datetime
 from datetime import timedelta
+from sqlalchemy import desc
 from .meta import Base
 
 import redis
@@ -100,6 +101,17 @@ class RssiReading(Base):
         return written
 
     @property
+    def beacons(self):
+        output = []
+        for i in range(1, 6):
+            bid = getattr(self, f'beacon_{i}_id')
+            bstrength = getattr(self, f'beacon_{i}_strength')
+            if bid and (bstrength > self.NULL_BEACON_STRENGTH):
+                output.append((bid, bstrength))
+
+        return output
+
+    @property
     def _redis_dedup_key(self):
         values = (str(self.__dict__.get(key)) for key in self.DEDUP_FIELDS)
         specific = '|'.join(values)
@@ -130,7 +142,7 @@ class RssiReading(Base):
 
     @classmethod
     def most_recent_from_badge(cls, session, badge_id):
-        row = session.query(cls).filter_by(badge_id=badge_id).order_by(cls.timestamp).limit(1)
+        row = session.query(cls).filter_by(badge_id=badge_id).order_by(desc(cls.timestamp)).limit(1)
 
         return row[0]
 

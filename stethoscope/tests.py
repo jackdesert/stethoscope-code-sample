@@ -1,8 +1,9 @@
+from pyramid import testing
+
+import datetime
 import pdb
 import transaction
 import unittest
-
-from pyramid import testing
 
 
 def dummy_request(dbsession):
@@ -269,6 +270,39 @@ class TestRssiReadingValidation(BaseTest):
         rr.pi_id = None
         self.assertFalse(rr.valid)
         self.assertTrue(rr.invalid)
+
+class TestRssiReadingLatestForBadge(BaseTest):
+
+    def setUp(self):
+        super(TestRssiReadingLatestForBadge, self).setUp()
+        self.init_database()
+
+    def validReading(self):
+        from .models.rssi_reading import RssiReading
+        reading = RssiReading(badge_id='a', pi_id='b', beacon_1_id='c', beacon_1_strength=-20)
+        return reading
+
+    def test_returns_latest_reading(self):
+        from .models.rssi_reading import RssiReading
+
+        reading_1 = self.validReading()
+        reading_1.timestamp = datetime.datetime.now() - datetime.timedelta(seconds=20)
+
+        reading_2 = self.validReading()
+
+        reading_3_other_badge = self.validReading()
+        reading_3_other_badge.badge_id = 'something_else'
+
+        self.session.add(reading_1)
+        self.session.add(reading_2)
+        self.session.add(reading_3_other_badge)
+
+        latest_reading = RssiReading.most_recent_from_badge(self.session,
+                                                            reading_1.badge_id)
+
+
+        self.assertEqual(reading_2, latest_reading)
+
 
 
 ############ TrainingRun Model Tests Written by Jack  #########################
