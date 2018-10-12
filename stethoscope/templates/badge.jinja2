@@ -6,6 +6,10 @@
     <h2>Badge {{ id }}</h2>
 
     <canvas id="mycanvas" width="1000" height="400"></canvas>
+    <div class='space-1rem'></div>
+
+    <h2>Location</h2>
+    <div id='location-list'></div>
 
     <div class='space-4rem'></div>
     <h2>Tech Notes</h2>
@@ -18,11 +22,15 @@
 
 
 <script src="{{request.static_path('stethoscope:static/smoothie.js')}}"></script>
-<script src="{{request.static_path('stethoscope:static/badge.js')}}"></script>
+<script src="{{request.static_path('stethoscope:static/badge__smoothie.js')}}"></script>
+<script src="{{request.static_path('stethoscope:static/badge__location.js')}}"></script>
 
 <script>
     window.onload = initiateBadgeSmoothie('{{ id }}',
                                           '{{ server_time }}',
                                            {{ max_id }})
+
+    window.onload = initiateBadgeLocation('{{ id }}')
+
 </script>
 {% endblock content %}

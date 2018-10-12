@@ -19,11 +19,14 @@ import pdb
              renderer='../templates/badge.jinja2')
 def badge_smoothie(request):
     id = request.matchdict['id']
-    last_reading_for_badge = request.dbsession.query(RssiReading).filter_by(badge_id=id).order_by(desc('id')).limit(1).all()[0]
+    last_reading_result = request.dbsession.query(RssiReading).filter_by(badge_id=id).order_by(desc('id')).limit(1).all()
 
     output = { 'id'          : id,
                'server_time' : str(datetime.now()),
-               'max_id'      : last_reading_for_badge.id }
+               'max_id'      : -1  }
+
+    if last_reading_result:
+        output['max_id'] = last_reading_result[0].id
 
     return output
 
