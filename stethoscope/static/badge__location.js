@@ -16,8 +16,8 @@ var initiateBadgeLocation = function(badgeId){
         }
 
         request.onerror = function() {
-            // There was a connection error of some sort
-            alert('some other error')
+            var errorObject = {'error': 'Check your Internet Connetion'}
+            displayLocation(errorObject)
         }
 
         request.send()
