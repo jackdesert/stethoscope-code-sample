@@ -33,3 +33,15 @@ Q: Why are you using theano as a backend?
 A: To get around this error that we get sometimes when we load a keras
    model from disk: "TypeError: Cannot interpret feed_dict key as Tensor"
 
+Q: Why is tensorflow being used instead of theano?
+A: Originally because it is the keras default.
+   Later theano was used briefly to get around this error:
+   "*** ValueError: Tensor is not an element of this graph."
+   But server startup takes twice as long with theano (9 seconds)
+   compared to tensorflow (4 seconds).
+   Also theano worked on my development machine (Kali) but did not
+   work out of the box on ubuntu 16.04 in production.
+   So once we solved teh error using this site:
+   https://github.com/keras-team/keras/issues/6462#issuecomment-319232504
+   then we went back to tensorflow.
+

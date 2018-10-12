@@ -97,7 +97,7 @@ Getting Started (This step generated from cookiecutter)
 
 - Upgrade packaging tools [and specific packages]
 
-    env/bin/pip install --upgrade pip setuptools redis markdown requests numpy keras theano
+    env/bin/pip install --upgrade pip setuptools redis markdown requests numpy keras tensorflow
 
 - Install the project in editable mode with its testing requirements.
 
@@ -164,6 +164,7 @@ Testing
 
 
 
+
 Timezone
 --------
 
@@ -179,8 +180,8 @@ Set it in your systemd unit file, if you run from systemd.
 Set it in your ~/.bashrc if you invoke manually.
 
 
-Performance Load Testing
-------------------------
+Performance Load Testing of POST /rssi_readings
+-----------------------------------------------
 
 see tools/README.md and tools/generate_load_test.py.
 
@@ -192,6 +193,12 @@ This is enough to collect data in 5 houses simultaneously.
 
 Note this did not include load from location prediction, because
 as of July 12, 2018 that piece has not been built yet.
+
+
+Simple Load Testing of /location
+--------------------------------
+
+    echo GET http://localhost:6540/badges/2/location | vegeta attack -rate 50 -duration 1s  | vegeta report
 
 
 Smoothie Charts
@@ -250,6 +257,7 @@ Train but do not save:
 Train and save to disk:
 
     env/bin/python stethoscope/models/neural_network.py --save
+
 
 API
 ---
