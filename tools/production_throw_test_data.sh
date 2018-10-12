@@ -1,19 +1,20 @@
 #! /bin/bash
 
 for i in {1..10000}; do
-    curl -k -X POST -H "Content-Type:application/json"  -i https://bip-stethoscope.elitecare.com/rssi_readings   -d '{"badge_id":"1", "pi_id":"1", "beacons":{"a": -30, "b": -35, "c": -40, "d": -42, "e": -50} }'
+    curl -k -X POST -H "Content-Type:application/json"  -i https://bip-stethoscope.elitecare.com/rssi_readings   -d '{"BIP003": -31, "BIP010": -36, "BIP020": -42, "BIP022": -57, "BIP036": -58} }'
     sleep 1
 
-    curl -k -X POST -H "Content-Type:application/json"  -i https://bip-stethoscope.elitecare.com/rssi_readings   -d '{"badge_id":"1", "pi_id":"2", "beacons":{"a": -34, "b": -38, "c": -52, "d": -53, "e": -54} }'
+
+    curl -k -X POST -H "Content-Type:application/json"  -i https://bip-stethoscope.elitecare.com/rssi_readings   -d '{"BIP003": -52, "BIP010": -16, "BIP020": -17, "BIP022": -27, "BIP036": -42} }'
     sleep 1
 
-    curl -k -X POST -H "Content-Type:application/json"  -i https://bip-stethoscope.elitecare.com/rssi_readings   -d '{"badge_id":"1", "pi_id":"2", "beacons":{"a": -34, "b": -37, "c": -45, "d": -60, "e": -63} }'
+    curl -k -X POST -H "Content-Type:application/json"  -i https://bip-stethoscope.elitecare.com/rssi_readings   -d '{"BIP003": -18, "BIP010": -31, "BIP020": -49, "BIP022": -47, "BIP036": -40} }'
     sleep 1
 
-    curl -k -X POST -H "Content-Type:application/json"  -i https://bip-stethoscope.elitecare.com/rssi_readings   -d '{"badge_id":"1", "pi_id":"2", "beacons":{"a": -41, "b": -42, "c": -52, "d": -60, "e": -63} }'
+    curl -k -X POST -H "Content-Type:application/json"  -i https://bip-stethoscope.elitecare.com/rssi_readings   -d '{"BIP003": -40, "BIP010": -45, "BIP020": -30, "BIP022": -22, "BIP036": -35} }'
     sleep 1
 
-    curl -k -X POST -H "Content-Type:application/json"  -i https://bip-stethoscope.elitecare.com/rssi_readings   -d '{"badge_id":"1", "pi_id":"2", "beacons":{"a": -39, "b": -42, "c": -62, "d": -70, "e": -63} }'
+    curl -k -X POST -H "Content-Type:application/json"  -i https://bip-stethoscope.elitecare.com/rssi_readings   -d '{"BIP003": -32, "BIP010": -45, "BIP020": -50, "BIP022": -82, "BIP036": -42} }'
     sleep 1
 done
 

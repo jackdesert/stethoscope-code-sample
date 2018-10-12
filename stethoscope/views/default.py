@@ -37,8 +37,15 @@ def rssi_readings_view(request):
 @view_config(route_name='create_rssi_reading',
              renderer='json')
 def haberdasher(request):
-    track_pi(request)
-    reading = RssiReading(**rssi_reading_params(request))
+    try:
+        params = json.loads(request.body)
+    except json.decoder.JSONDecodeError:
+        request.response.status_code = 400
+        return dict(errors='JSONDecodeError', payload_received=request.body.decode())
+
+    track_pi(params)
+    reading = RssiReading(**rssi_reading_params(params))
+
     if reading.invalid:
         request.response.status_code = 400
         return dict(errors=reading.errors)
@@ -50,9 +57,8 @@ def haberdasher(request):
         request.dbsession.add(reading)
         return reading.to_dict()
 
-def rssi_reading_params(request):
+def rssi_reading_params(params):
     whitelist = {'badge_id', 'pi_id'}
-    params = json.loads(request.body)
     output = { k:v for k,v in params.items() if k in whitelist }
 
     counter = 1
@@ -72,8 +78,7 @@ def rssi_reading_params(request):
     return output
 
 
-def track_pi(request):
-    params = json.loads(request.body)
+def track_pi(params):
     pi_id = params.get('pi_id')
     PiTracker.record(pi_id)
 

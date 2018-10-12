@@ -8,14 +8,16 @@
     <canvas id="mycanvas" width="1000" height="400"></canvas>
     <div class='space-1rem'></div>
 
-    <h2>Location</h2>
+    <h2>Raw Location</h2>
     <div id='location-list'></div>
 
     <div class='space-4rem'></div>
     <h2>Tech Notes</h2>
     <ol class='tech-notes'>
-        <li>Readings arrive at left edge 7 seconds after ingestion</li>
-        <li>Readings are smoothed with a Bezier curve for aesthetics</li>
+        <li>Smoothie: Readings arrive at left edge 7 seconds after ingestion</li>
+        <li>Smoothie: Readings are smoothed with a Bezier curve for aesthetics</li>
+        <li>Raw Location: updates every second and displays most recent RssiReading and its associated location.</li>
+        <li>Raw Location: reading.imposter_beacons should be empty.</li>
     </ul>
 </div>
 

@@ -120,6 +120,15 @@ class TestHaberdasher(BaseTest):
                                 'beacon_2_strength': 20},
                           'Returns 2 in sorted order')
 
+    def test_malformed_json(self):
+        from .views.default import haberdasher
+        import json
+
+        req = dummy_request(self.session)
+        req.body = '{malformed json'.encode()
+        haberdasher(req)
+        self.assertEqual(req.response.status_code, 400, 'Returns status code 400')
+
 #class TestMyViewFailureCondition(BaseTest):
 #
 #    def test_failing_view(self):
