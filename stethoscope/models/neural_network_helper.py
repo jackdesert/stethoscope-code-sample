@@ -20,10 +20,9 @@ class NoMatchingBeaconsError(Exception):
 class NeuralNetworkHelper:
     @classmethod
     def vectorize_and_normalize_reading(cls, rssi_reading, metadata=None):
+        # For bulk usage, pass in `metadata` so it need not be read from disk each time
         if not metadata:
             with open(NeuralNetwork.METADATA_FILEPATH, 'rb') as f:
-                # TODO Load this once in the controller so it does not have to read from disk
-                # during each http request
                 metadata = pickle.load(f)
 
 

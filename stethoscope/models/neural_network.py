@@ -26,7 +26,7 @@ from stethoscope.models.training_run import TrainingRun
 
 class NeuralNetwork:
     MODEL_FILEPATH = 'keras/model.h5'
-    METADATA_FILEPATH = 'keras/metadata.yml'
+    METADATA_FILEPATH = 'keras/metadata.pickle'
 
     def __init__(self, dbsession):
         self.dbsession = dbsession
@@ -38,10 +38,10 @@ class NeuralNetwork:
         self.history = None
         self.metadata = None
 
-    def train(self):
+    def train(self, validate):
         self._fetch_data_and_labels()
         self._build_model()
-        self._train_model()
+        self._train_model(validate)
 
     def write_to_disk(self):
         self.model.save(self.MODEL_FILEPATH)
@@ -67,6 +67,7 @@ class NeuralNetwork:
         data_vectorized, dedup_index = np.unique(data_vectorized,
                                                  axis=0,
                                                  return_index=True)
+
         labels_one_hot = labels_one_hot[dedup_index]
         self.metadata = metadata
 
@@ -86,7 +87,7 @@ class NeuralNetwork:
         num_rooms = self.labels_one_hot.shape[-1]
         # TODO What Type of Layers (and how big) are best for this model?
         # TODO Why are we specifying an input shape???
-        model.add(layers.Dense(16, activation='relu', input_shape=input_shape))
+        model.add(layers.Dense(32, activation='relu', input_shape=input_shape))
         model.add(layers.Dense(16, activation='relu'))
         model.add(layers.Dense(num_rooms, activation='softmax'))
 
@@ -96,20 +97,24 @@ class NeuralNetwork:
 
         self.model = model
 
-    def _train_model(self):
-        halfway = self.data_vectorized.shape[0] // 2
+    def _train_model(self, validate):
+        num_samples = self.data_vectorized.shape[0]
+        if validate:
+            num_training_samples = num_samples * 2 // 3
+        else:
+            num_training_samples = num_samples
 
-        train_samples = self.data_vectorized[:halfway]
-        validation_samples = self.data_vectorized[halfway:]
+        train_samples = self.data_vectorized[:num_training_samples]
+        validation_samples = self.data_vectorized[num_training_samples:]
 
-        train_labels = self.labels_one_hot[:halfway]
-        validation_labels = self.labels_one_hot[halfway:]
+        train_labels = self.labels_one_hot[:num_training_samples]
+        validation_labels = self.labels_one_hot[num_training_samples:]
 
         augmented_samples, augmented_labels = self._augmented(train_samples, train_labels)
 
         self.history = self.model.fit(augmented_samples,
                                       augmented_labels,
-                                      epochs=20,
+                                      epochs=60,
                                       batch_size=512,
                                       validation_data=(validation_samples, validation_labels))
 
@@ -118,8 +123,8 @@ class NeuralNetwork:
         #  1. Together
         #  2. Separately
 
-        together_scale = 0.2
-        separate_scale = 0.1
+        together_scale = 0.1
+        separate_scale = 0.05
 
         together_gain = np.random.normal(loc=1, scale=together_scale)
         new_sample = sample * together_gain
@@ -133,7 +138,12 @@ class NeuralNetwork:
 
     def _augmented(self, samples, labels):
 
-        multiplier = 10000
+        # multiplier vs average validation accuracy
+        # 1          83%
+        # 2          86%
+        # 4          87%
+        # 8          86%
+        multiplier = 4
 
         lsh1, lsh2 = labels.shape
         output_labels_shape = (lsh1 * multiplier, lsh2)
@@ -181,10 +191,10 @@ if __name__ == '__main__':
             request = env['request']
             request.tm.begin()
             net = NeuralNetwork(request.dbsession)
-            net.train()
+            net.train(not save)
             if save:
                 net.write_to_disk()
-                print('\nKeras model and metada written to disk')
+                print('\nKeras model and metadata written to disk')
     if load:
         model = models.load_model(NeuralNetwork.MODEL_FILEPATH)
         metadata = pickle.load(open(NeuralNetwork.METADATA_FILEPATH, 'rb'))

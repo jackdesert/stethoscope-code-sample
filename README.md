@@ -251,6 +251,14 @@ payload: [{person_id: xxx, room_id: xxx}, ...]
 Train the Keras Model using TrainingRuns
 ----------------------------------------
 
+When you are ready to train a large dataset, it is recommended to
+download the sqlite database to your local machine (which likely
+has more memory than the production box) and train the keras model locally.
+
+Afterward, simply push keras/model.h5 and keras/metadata.pickle
+to your production box.
+
+
 Train but do not save:
 
     env/bin/python stethoscope/models/neural_network.py
