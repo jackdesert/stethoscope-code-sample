@@ -42,7 +42,7 @@ var bindNewTrainingRun = function(){
             }
 
             request.onerror = function() {
-                alert('error in onerror')
+                alert('Error starting training runs. Please check your network connection and click "Start" again.')
               // There was a connection error of some sort
             }
 
@@ -80,7 +80,7 @@ var bindNewTrainingRun = function(){
             }
 
             request.onerror = function() {
-                alert('error in onerror')
+                alert('Error saving training runs. Please check your network connection and click "Save" again.')
               // There was a connection error of some sort
             }
 
@@ -121,7 +121,7 @@ var bindNewTrainingRun = function(){
             }
 
             request.onerror = function() {
-                alert('error in onerror')
+                console.log('Error fetching stats. Please check your network connection')
               // There was a connection error of some sort
             }
 
