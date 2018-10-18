@@ -80,7 +80,7 @@ var bindNewTrainingRun = function(){
             }
 
             request.onerror = function() {
-                alert('Error saving training runs. Please check your network connection and click "Save" again.')
+                alert('Error saving training runs. Please check your network connection and click "End" again.')
               // There was a connection error of some sort
             }
 
@@ -193,7 +193,7 @@ var bindNewTrainingRun = function(){
             var runningClass = 'start-button_running'
 
             if (running){
-                startButton.value = 'Save'
+                startButton.value = 'End'
                 startButton.classList.add(runningClass)
             }else{
                 startButton.value = 'Start'
