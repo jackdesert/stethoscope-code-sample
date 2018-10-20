@@ -1,4 +1,5 @@
 from ..models.training_run import TrainingRun
+from ..models.training_run import TrainingRunExpectedCompleteError
 from ..models.rssi_reading import RssiReading
 from ..models.util import bip_rooms
 
@@ -132,7 +133,11 @@ def training_runs__bulk_stats_view(request):
     in_progress_training_runs = TrainingRun.with_ids(request.dbsession, training_run_ids)
 
     for t_run in in_progress_training_runs:
-        count = t_run.count_rssi_readings(request.dbsession, False)
+        try:
+            count = t_run.count_rssi_readings(request.dbsession, False)
+        except TrainingRunExpectedCompleteError:
+            request.response.status_code = 409
+            return {'error': f'Training run with id {t_run.id} has already ended'}
         output['in_progress'][t_run.badge_id] = count
         output['in_progress_total'] += count
         output['total'] += count

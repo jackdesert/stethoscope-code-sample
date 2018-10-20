@@ -20,6 +20,11 @@ import pdb
 # namedtuple must be defined outside the class so the unpickler can find it
 KerasMetadata = namedtuple('KerasMetadata', ['room_ids', 'beacon_id_to_beacon_index', 'strength_range', 'min_strength'])
 
+class TrainingRunExpectedCompleteError(Exception):
+    '''Expectation not met: Either training run is complete
+       (has start_timestamp and end_timestamp) but expectation was false,
+       or vice versa'''
+
 class TrainingRun(Base):
     __tablename__ = 'training_runs'
     id              = Column(Integer, primary_key=True)
@@ -47,7 +52,8 @@ class TrainingRun(Base):
     def rssi_readings(self, session, expected_complete):
         # Raise exception if this TrainingRun is not in the
         # state you expect
-        assert expected_complete == bool(self.end_timestamp)
+        if not expected_complete == bool(self.end_timestamp):
+            raise TrainingRunExpectedCompleteError
 
         readings = session.query(RssiReading). \
                    filter(RssiReading.badge_id == self.badge_id). \
