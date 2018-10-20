@@ -35,6 +35,7 @@
 
             {% if r.completed_runs %}
                 <tr class='table__tr'>
+                    <th class='table__th'>ID</th>
                     <th class='table__th'>Badge</th>
                     <th class='table__th'>Readings</th>
                     <th class='table__th'>Start Time</th>
@@ -44,11 +45,12 @@
             {% endif %}
             {% for tr in r.completed_runs %}
                 <tr class="table__tr {{ loop.cycle('table__tr_stripe', '') }}">
+                    <td class='table__td'>{{ tr.id }}</td>
                     <td class='table__td'>{{ tr.badge_id }}</td>
                     <td class='table__td'>{{ tr.count_rssi_readings_memoized }}</td>
                     <td class='table__td'>{{ tr.start_timestamp | format }}</td>
                     <td class='table__td'>{{ tr.end_timestamp | format }}</td>
-                    <td class='table__td'>{{ tr.recorded_by }}</td>
+                    <td class='table__td'>{{ tr.created_by }}</td>
                 </tr>
             {% endfor %}
         {% endfor %}
