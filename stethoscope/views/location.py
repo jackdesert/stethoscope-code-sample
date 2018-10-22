@@ -4,6 +4,7 @@ from ..models.util import bip_rooms
 from ..models.rssi_reading import RssiReading
 from ..models.neural_network import NeuralNetwork
 from ..models.neural_network_helper import NeuralNetworkHelper
+from ..models.neural_network_helper import NoMatchingBeaconsError
 
 from collections import defaultdict
 from copy import deepcopy
@@ -42,8 +43,11 @@ def location_view(request):
     reading = RssiReading.most_recent_from_badge(request.dbsession, badge_id)
 
     metadata = pickle.load(open(NeuralNetwork.METADATA_FILEPATH, 'rb'))
-    reading_vectorized, imposter_beacons = NeuralNetworkHelper.vectorize_and_normalize_reading(reading, metadata)
-
+    try:
+        reading_vectorized, imposter_beacons = NeuralNetworkHelper.vectorize_and_normalize_reading(reading, metadata)
+    except NoMatchingBeaconsError:
+        request.response.status_code = 409
+        return dict(error=f'No Matching Beacons in RssiReading with id {reading.id} and beacons {reading.beacons}. This means that beacons used for training and beacons in this reading are disjoint.')
 
     # Nest it one deep so shape matches correctly
     reading_vectorized_2d = np.array([reading_vectorized])
