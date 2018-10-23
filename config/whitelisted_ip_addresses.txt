@@ -1,0 +1,7 @@
+allow 208.100.43.186;  # Jack's VPN
+allow 35.164.167.43;   # Stethoscope's IP, where website-monitor is running
+allow 173.137.176.200; # Bill's home network
+
+# Find out who these IP addresses are
+allow 73.240.210.233; # POST /rssi_readings
+allow 96.65.199.129;  # POST /rssi_readings
