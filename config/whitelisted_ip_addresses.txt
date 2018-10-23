@@ -1,7 +1,14 @@
 allow 208.100.43.186;  # Jack's VPN
 allow 35.164.167.43;   # Stethoscope's IP, where website-monitor is running
 allow 173.137.176.200; # Bill's home network
+allow 73.190.115.13;   # Tony
 
 # Find out who these IP addresses are
 allow 73.240.210.233; # POST /rssi_readings
 allow 96.65.199.129;  # POST /rssi_readings
+
+
+allow 34.213.117.184; # bip.elitecare.com
+allow 54.149.237.242; # staging.elitecare.com
+allow 52.41.174.145;  # demo.elitecare.com
+allow 34.212.41.139;  # cascade.elitecare.com
