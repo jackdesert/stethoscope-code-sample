@@ -126,11 +126,13 @@ Docs are at https://github.com/andymccurdy/redis-py
 
 Nginx
 -----
-env/bin/pip install -e ".[testing]"
+
     cd /etc/nginx/sites-enabled
     sudo rm default
     sudo ln -s /home/ubuntu/stethoscope/config/bip-stethoscope-nginx.conf
     sudo nginx -s reload
+
+Note that we use IP whitelisting. See the nginx config file.
 
 
 ### Nginx Server Tokens
@@ -221,32 +223,6 @@ If the environment variable POST_TO_SLACK is set, any unhandled exceptions
 will be handled by the custom exception view defined in stethoscope/views/exception.py.
 
 
----
----
----
-
-Other Pieces that May Need Implementing to Move This Project Forward
-====================================================================
-
-
-
-Get Person IDs (So we can map badges to people)
------------------------------------------------
-
-GET staging.elitecare.com/api/badges_people.json
-
-Now we know which badge maps to which person_id
-
-
-
-Set Locations (To Acquire Training Data)
-----------------------------------------
-
-POST staging.elitecare.com/api/location
-
-payload: [{person_id: xxx, room_id: xxx}, ...]
-
-
 
 Train the Keras Model using TrainingRuns
 ----------------------------------------
@@ -268,8 +244,26 @@ Train and save to disk:
     env/bin/python stethoscope/models/neural_network.py --save
 
 
-API
----
+Re-Training with Additional Beacons
+-----------------------------------
+
+Let's say you want to add more beacons to an already-trained system.
+The most likely scenario is that you decide to support additional rooms,
+and you didn't have any beacons in or near those rooms previously.
+
+For best accuracy, you would delete all training runs, then create all
+training runs from scratch.
+
+However, it is obviously most convenient to simple add the new beacons,
+create new training runs only for the newly added rooms, and go on your
+merry way.
+
+You may choose either option, but if accuracy is less than you had hoped for,
+you can always delete training runs and start fresh with all the beacons in place.
+
+
+API (See documentation on website)
+----------------------------------
 
     curl -k -X POST -H "Content-Type:application/json"  -i http://localhost:6540/rssi_readings   -d '{"badge_id":"1", "pi_id":"2", "beacons":{"a": -30, "b": -35, "c": -40} }'
 
@@ -277,30 +271,8 @@ API
     curl -k -X POST -H "Content-Type:application/json"  -i http://localhost:6540/badges/2/location  -d '{"badge_id":"1", "pi_id":"2", "beacons":{"a": -30, "b": -35, "c": -40} }'
 
 
-
-
-uWSGI
------
-
-Here is the invocation of the entry point defined by wsgi.py
-
-    sudo uwsgi --chmod-socket=020 --enable-threads --plugin=python3 -s /home/ubuntu/stethoscope/tmp/stethoscope.sock --manage-script-name --mount /=wsgi:app --uid ubuntu --gid www-data --virtualenv env
-
-
-
-
-SECURITY and PRODUCTION
------------------------
-
-Some things to address before going live in production:
-
-  * Lock down IP address (Elitecare + Jack + Tony + Bill + our EC2 boxen + site24x7)
-    - Is this necessary?
-    - what about site24x7
-
-
-Deep Learning Considerations: BASE RATE
----------------------------------------
+Bayes Priors and BASE RATE
+--------------------------
 
 Initially I thought this was a class-balanced classification problem.
 However, let's think about the base rate in terms of David x.
@@ -317,6 +289,22 @@ Example:
   * Our sensor predicts that it's twice as likely that she's in the
     kitchen than in her suite (Now this is a tough call. How often is she
     actually in the kitchen?)
+
+
+
+Making Database Backups of Training Runs and Associated Rssi Readings
+---------------------------------------------------------------------
+
+    cd /path/to/stethoscope
+    env/bin/python stethoscope/scripts/backup_relevant_parts_of_database.py <output_file>
+
+The parts of the database that we want to make sure we keep
+are the training runs and the associated rssi readings.
+All the other rssi readings could be thrown away and we
+wouldn't care.
+
+If you want to know where a resident was over the course of a year,
+you would want to store location CHANGES so you're not saving so much data.
 
 
 
