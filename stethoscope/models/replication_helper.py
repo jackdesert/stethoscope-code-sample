@@ -1,4 +1,5 @@
 import pdb
+from datetime import datetime
 
 class ReplicationHelper:
     def __init__(self, klass):
@@ -17,12 +18,11 @@ class ReplicationHelper:
 
     def insert_single(self, obj):
         sql = f'INSERT INTO {self.table_name} VALUES ('
-
         values = []
+
         for attribute in self._columns():
             value = getattr(obj, attribute)
-            value_formatted = f'"{value}"'
-            values.append(value_formatted)
+            values.append(self._format_value(value))
 
         sql += ', '.join(values)
         sql += ');\n\n'
@@ -30,3 +30,15 @@ class ReplicationHelper:
 
     def _columns(self):
         return (str(col).split('.')[1] for col in self.klass.__table__.columns)
+
+    def _format_value(self, value):
+        if isinstance(value, int):
+            # Plain string
+            return str(value)
+        elif isinstance(value, str) or isinstance(value, datetime):
+            # Quoted string
+            return f'"{value}"'
+        elif value == None:
+            return 'NULL'
+        else:
+            raise TypeError
