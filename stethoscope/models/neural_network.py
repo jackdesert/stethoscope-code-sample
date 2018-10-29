@@ -187,7 +187,7 @@ if __name__ == '__main__':
         load = True
 
     if train:
-        with bootstrap('/home/jd/r/stethoscope/development.ini') as env:
+        with bootstrap('development.ini') as env:
             request = env['request']
             request.tm.begin()
             net = NeuralNetwork(request.dbsession)

@@ -308,6 +308,13 @@ you would want to store location CHANGES so you're not saving so much data.
 
 
 
+Restoring From a Database Backup
+--------------------------------
+
+    rm stethoscope.sqlite
+    cat backups/<filename> | sqlite3 stethoscope.sqlite
+
+
 
 BACKLOG
 -------
