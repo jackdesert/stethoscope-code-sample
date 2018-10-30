@@ -84,13 +84,16 @@ def location_view(request):
 
         bayes_weights_dict = {rid: weight/total_weight for rid, weight in weights.items()}
 
-        bayes = []
+        bayes_before_normalization = []
         for room_id, raw_probability, room_name in raw:
 
             bayes_weight = bayes_weights_dict[room_id]
             bayes_probability = raw_probability * bayes_weight
             row = [room_id, bayes_probability, room_name, bayes_weight]
-            bayes.append(row)
+            bayes_before_normalization.append(row)
+
+        bayes_total_probability = sum([bp for _, bp, _, _ in bayes_before_normalization])
+        bayes = [[ri, bp / bayes_total_probability, rn, bw] for ri, bp, rn, bw in bayes_before_normalization]
 
         output['bayes'] = bayes
 
