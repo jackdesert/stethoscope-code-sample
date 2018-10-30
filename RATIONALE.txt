@@ -45,3 +45,9 @@ A: Originally because it is the keras default.
    https://github.com/keras-team/keras/issues/6462#issuecomment-319232504
    then we went back to tensorflow.
 
+Q: Why are rooms given a default bayes weight if that room is not included in the payload?
+A: Because that makes it easier to support large campuses, where there are
+   large numbers of rooms in other houses where the resident is unlikely to be.
+   By using a default bayes weight for any unlisted houses, the payloads
+   become smaller because you still get approximately the answer you
+   are looking for without having to pass in a bayes weight for every room on campus.

@@ -71,20 +71,20 @@ def location_view(request):
 
     if request.body:
         priors = json.loads(request.body).get('priors')
-        prior_room_ids = {room_id for room_id, weight in priors}
+        priors_dict = {room_id: weight for room_id, weight in priors}
 
-        if prior_room_ids and not prior_room_ids.issuperset(room_ids):
-            request.response.status_code = 409
-            return dict(error=f'Incomplete list of priors. Please include prior for these trained rooms: { set(room_ids) - prior_room_ids }')
+        total_weight = 0.0
+        weights = {}
 
+        for room_id in room_ids:
+            # Default weight
+            weight = priors_dict.get(room_id) or 1.0
+            total_weight += weight
+            weights[room_id] = weight
 
-        bayes_weights_dict = defaultdict(float)
-        total_weight = sum([weight for _, weight in priors])
-        for room_id, weight in priors:
-            bayes_weights_dict[room_id] = weight / total_weight
+        bayes_weights_dict = {rid: weight/total_weight for rid, weight in weights.items()}
 
         bayes = []
-
         for room_id, raw_probability, room_name in raw:
 
             bayes_weight = bayes_weights_dict[room_id]

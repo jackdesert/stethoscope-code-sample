@@ -18,8 +18,9 @@ Payload (POST only)
                   [<room_id>, <weight>]]
     }
 
+* `priors` means how many times more likely than the default value are they to be in that room.
 * `priors` is optional. That is, this endpoint may be called with no payload at all.
-* If `priors` are included, you must provide a weight for each room which had training runs when the keras model was trained.
+* If `priors` are included, the default prior is 1.0. That means any trained rooms that are not explicitly listed in your priors will receive a value of 1.
 * Ordering of the rooms does not matter.
 * Parameters not listed in the payload above will be ignored.
 * Weights need not add up to 1.0.
