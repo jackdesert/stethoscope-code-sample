@@ -17,7 +17,6 @@ Data.fs*
 .sw?
 .DS_Store
 coverage
-test
 /stethoscope.sqlite
 
 /tools/vegeta_data/*.json

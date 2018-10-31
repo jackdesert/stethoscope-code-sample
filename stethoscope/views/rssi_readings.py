@@ -36,7 +36,7 @@ def rssi_readings_view(request):
 
 @view_config(route_name='create_rssi_reading',
              renderer='json')
-def haberdasher(request):
+def create_rssi_reading_view(request):
     try:
         params = json.loads(request.body)
     except json.decoder.JSONDecodeError:
