@@ -40,7 +40,8 @@ class NeuralNetworkHelper:
                     imposter_beacons.add(beacon_id)
 
         if np.unique(output).shape == (1,):
-            raise NoMatchingBeaconsError
+            msg = f'No Matching Beacons in RssiReading with id {rssi_reading.id} and beacons {rssi_reading.beacons}. This means that beacons used for training and beacons in this reading are disjoint.'
+            raise NoMatchingBeaconsError(msg)
 
         output /= metadata.strength_range
 

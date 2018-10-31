@@ -16,6 +16,7 @@
 
 import pdb
 import numpy as np
+import pickle
 
 from keras import models
 from keras import layers
@@ -164,6 +165,21 @@ class NeuralNetwork:
         assert(output_index == len(output_samples))
         return output_samples, output_labels
 
+    @classmethod
+    def saved_model(cls):
+        model = models.load_model(cls.MODEL_FILEPATH)
+        # Call _make_predict_function to avoid getting error:
+        #   "*** ValueError: Tensor is not an element of this graph."
+        # see https://github.com/keras-team/keras/issues/6462#issuecomment-319232504
+        model._make_predict_function()
+
+        return model
+
+
+    @classmethod
+    def saved_metadata(cls):
+        metadata = pickle.load(open(cls.METADATA_FILEPATH, 'rb'))
+        return metadata
 
 
 if __name__ == '__main__':
@@ -171,7 +187,6 @@ if __name__ == '__main__':
 
     from pyramid.paster import bootstrap
     import sys
-    import pickle
 
     # Defaults
     train = False
@@ -196,8 +211,8 @@ if __name__ == '__main__':
                 net.write_to_disk()
                 print('\nKeras model and metadata written to disk')
     if load:
-        model = models.load_model(NeuralNetwork.MODEL_FILEPATH)
-        metadata = pickle.load(open(NeuralNetwork.METADATA_FILEPATH, 'rb'))
+        model = NeuralNetwork.saved_model()
+        metadata = NeuralNetwork.saved_metadata()
         pdb.set_trace()
         a = 5
 

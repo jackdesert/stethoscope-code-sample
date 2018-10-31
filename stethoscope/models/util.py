@@ -8,6 +8,9 @@ def bip_rooms():
     data = requests.get(uri, timeout=10)
     return data.json()
 
+def bip_rooms_hash():
+    return { room_id: room_name for (room_id, room_name) in bip_rooms() }
+
 class PiTracker:
     REDIS = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
     KEY_PREPEND = 'active_pi'

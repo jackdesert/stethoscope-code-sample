@@ -5,6 +5,7 @@ from ..models.rssi_reading import RssiReading
 from ..models.neural_network import NeuralNetwork
 from ..models.neural_network_helper import NeuralNetworkHelper
 from ..models.neural_network_helper import NoMatchingBeaconsError
+from ..models.location_predictor import LocationPredictor
 
 from collections import defaultdict
 from copy import deepcopy
@@ -42,75 +43,18 @@ def location_view(request):
 
     reading = RssiReading.most_recent_from_badge(request.dbsession, badge_id)
 
-    metadata = pickle.load(open(NeuralNetwork.METADATA_FILEPATH, 'rb'))
-    try:
-        reading_vectorized, imposter_beacons = NeuralNetworkHelper.vectorize_and_normalize_reading(reading, metadata)
-    except NoMatchingBeaconsError:
-        request.response.status_code = 409
-        return dict(error=f'No Matching Beacons in RssiReading with id {reading.id} and beacons {reading.beacons}. This means that beacons used for training and beacons in this reading are disjoint.')
-
-    # Nest it one deep so shape matches correctly
-    reading_vectorized_2d = np.array([reading_vectorized])
-    prediction = model.predict(reading_vectorized_2d)
-
-    # TODO Cache bip_rooms to reduce network calls
-    current_room_names_by_id = { rid: rname for (rid, rname) in bip_rooms_memoized }
-    room_ids = metadata.room_ids
-
-
-
-    raw = []
-    for room_id, raw_probability in zip(room_ids, prediction[0]):
-        room_name = current_room_names_by_id.get(room_id) or 'unknown'
-
-        row = [room_id, float(raw_probability), room_name]
-        raw.append(row)
-
-    output = dict(raw=raw)
-
-
+    priors = None
     if request.body:
         priors = json.loads(request.body).get('priors')
-        priors_dict = {room_id: weight for room_id, weight in priors}
 
-        total_weight = 0.0
-        weights = {}
+    predictor = LocationPredictor(reading, priors=priors)
 
-        for room_id in room_ids:
-            # Default weight
-            weight = priors_dict.get(room_id) or 1.0
-            total_weight += weight
-            weights[room_id] = weight
-
-        bayes_weights_dict = {rid: weight/total_weight for rid, weight in weights.items()}
-
-        bayes_before_normalization = []
-        for room_id, raw_probability, room_name in raw:
-
-            bayes_weight = bayes_weights_dict[room_id]
-            bayes_probability = raw_probability * bayes_weight
-            row = [room_id, bayes_probability, room_name, bayes_weight]
-            bayes_before_normalization.append(row)
-
-        bayes_total_probability = sum([bp for _, bp, _, _ in bayes_before_normalization])
-        bayes = [[ri, bp / bayes_total_probability, rn, bw] for ri, bp, rn, bw in bayes_before_normalization]
-
-        output['bayes'] = bayes
+    try:
+        return predictor.location
+    except NoMatchingBeaconsError as ee:
+        request.response.status_code = 409
+        msg = ee.__repr__()
+        return dict(error=msg)
 
 
 
-    for algorithm, data in output.items():
-        # Sort by probability
-        data.sort(key=operator.itemgetter(1), reverse=True)
-
-
-    # Include information about the reading
-    output['reading'] = dict(id                = reading.id,
-                             pi_id             = reading.pi_id,
-                             badge_id          = reading.badge_id,
-                             beacons           = reading.beacons,
-                             vectorized        = [float(i) for i in reading_vectorized],
-                             timestamp         = str(reading.timestamp),
-                             imposter_beacons  = list(imposter_beacons),)
-
-    return output
