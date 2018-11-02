@@ -80,7 +80,8 @@ def rssi_reading_params(params):
 
 def track_pi(params):
     pi_id = params.get('pi_id')
-    PiTracker.record(pi_id)
+    ip_address = params.get('ip_address')
+    PiTracker.record(pi_id, ip_address)
 
 
 

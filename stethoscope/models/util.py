@@ -16,8 +16,9 @@ class PiTracker:
     KEY_PREPEND = 'active_pi'
 
     @classmethod
-    def record(cls, pi_id):
-        cls.REDIS.set(f'{cls.KEY_PREPEND}:{pi_id}', pi_id, ex=60)
+    def record(cls, pi_id, ip_address):
+        ansible = f'{ip_address} # {pi_id}'
+        cls.REDIS.set(f'{cls.KEY_PREPEND}:{pi_id}', ansible, ex=60)
 
     @classmethod
     def active_pis(cls):
