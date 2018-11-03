@@ -13,26 +13,37 @@ def bip_rooms_hash():
 
 class PiTracker:
     REDIS = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
-    KEY_PREPEND = 'active_pi'
+    RECENT_KEY_PREPEND        = 'pi-recent-pi'
+    NO_EXPIRATION_KEY_PREPEND = 'pi-no-expiration'
 
     @classmethod
     def record(cls, pi_id, ip_address):
         ansible = f'{ip_address} # {pi_id}'
-        cls.REDIS.set(f'{cls.KEY_PREPEND}:{pi_id}', ansible, ex=60)
+        cls.REDIS.set(f'{cls.RECENT_KEY_PREPEND}:{pi_id}', ansible, ex=60)
+        cls.REDIS.set(f'{cls.NO_EXPIRATION_KEY_PREPEND}:{pi_id}', ansible)
+
+    @classmethod
+    def pis(cls):
+        return cls._pis_by_key_prepend(cls.NO_EXPIRATION_KEY_PREPEND)
 
     @classmethod
     def active_pis(cls):
+        return cls._pis_by_key_prepend(cls.RECENT_KEY_PREPEND)
+
+
+    @classmethod
+    def _pis_by_key_prepend(cls, key_prepend):
         keys = set()
         cursor = None
         while cursor != 0:
             if not cursor:
                 cursor = 0 # first time through
-            cursor, returned_keys = cls.REDIS.scan(cursor, match=f'{cls.KEY_PREPEND}*')
+            cursor, returned_keys = cls.REDIS.scan(cursor, match=f'{key_prepend}*')
             for key in returned_keys:
                 keys.add(key)
         if not keys:
             return []
-        return cls.REDIS.mget(keys)
+        return sorted(cls.REDIS.mget(keys))
 
 
 

@@ -1,6 +1,7 @@
 def includeme(config):
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('landing', '/')
+    config.add_route('ansible', '/ansible')
     config.add_route('docs__rssi_readings', '/api-docs/rssi_readings')
     config.add_route('docs__location', '/api-docs/location')
     config.add_route('training_runs__index', '/training_runs')
