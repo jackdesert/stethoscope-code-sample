@@ -18,19 +18,8 @@ import pickle
 import numpy as np
 
 
-# Inflate Keras model outside the method so it doesn't get called during a request
-model = models.load_model(NeuralNetwork.MODEL_FILEPATH)
-
-# Call _make_predict_function to avoid getting error:
-#   "*** ValueError: Tensor is not an element of this graph."
-# see https://github.com/keras-team/keras/issues/6462#issuecomment-319232504
-model._make_predict_function()
-bip_rooms_memoized = bip_rooms()
-
-
 # Predict which room is most likely based on the last RssiReading.
 # TODO Update to use the last several RssiReadings and return the most common answer
-# TODO move this code to a model
 # Accepts priors and uses them in Bayesian fashion
 @view_config(route_name='location',
              renderer='json')

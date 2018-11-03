@@ -1,0 +1,6 @@
+#! /bin/bash
+
+CMD='sudo systemctl stop stethoscope'
+
+echo $CMD
+$CMD

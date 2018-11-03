@@ -1,0 +1,6 @@
+#! /bin/bash
+
+CMD='sudo systemctl status stethoscope'
+
+echo $CMD
+$CMD

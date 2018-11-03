@@ -1,0 +1,6 @@
+#! /bin/bash
+
+CMD='sudo systemctl restart stethoscope'
+
+echo $CMD
+$CMD
