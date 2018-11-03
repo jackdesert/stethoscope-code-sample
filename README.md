@@ -251,15 +251,33 @@ Let's say you want to add more beacons to an already-trained system.
 The most likely scenario is that you decide to support additional rooms,
 and you didn't have any beacons in or near those rooms previously.
 
-For best accuracy, you would delete all training runs, then create all
-training runs from scratch.
+The most conservative answer for best accuracy is to delete all
+training runs, then create new training runs from scratch.
 
 However, it is obviously most convenient to simple add the new beacons,
 create new training runs only for the newly added rooms, and go on your
 merry way.
 
-You may choose either option, but if accuracy is less than you had hoped for,
-you can always delete training runs and start fresh with all the beacons in place.
+### How to Tell if it Will be Worth Re-Training
+
+Say you already trained rooms A, B, and C with beacons R, S, T, and U.
+If you now train a new room D with additional beacons V and W,
+the new room D will have shiny new (accurate) training runs. It's the
+training runs for rooms A, B, and C that are in question. Here's
+how to tell if it's worth re-training A, B, and C:
+
+* With beacons V and W turned on, go into each of rooms A, B, and C with a badge
+and watch the data coming in from that badge at /badges/:id.
+
+* In each of rooms A, B, and C what you are looking for is whether
+beacons V and W show up strongly. If they do, delete the training
+runs for that room and create them anew. If they do not, it's fine
+to leave them be.
+
+(Note that beacons V and W, if present in the RssiReading, will show up in the
+"imposter_beacons" part of the payload at /badges/:id. But what you
+are actually looking for is whether V and W are ranked highly. For example,
+do they show up as one of the three strongest for that reading?)
 
 
 API (See documentation on website)
