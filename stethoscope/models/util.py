@@ -1,3 +1,4 @@
+from datetime import datetime
 import requests
 import redis
 import pdb
@@ -18,9 +19,12 @@ class PiTracker:
 
     @classmethod
     def record(cls, pi_id, ip_address):
-        ansible = f'{ip_address} # {pi_id}'
+        ip_address = str(ip_address).ljust(16)
+        ansible = f'{ip_address}# {pi_id.ljust(18)}'
+        now = datetime.now().strftime('%Y-%m-%d %H:%M')
+        ansible_with_timestamp = f'{ansible}{now}'
         cls.REDIS.set(f'{cls.RECENT_KEY_PREPEND}:{pi_id}', ansible, ex=60)
-        cls.REDIS.set(f'{cls.NO_EXPIRATION_KEY_PREPEND}:{pi_id}', ansible)
+        cls.REDIS.set(f'{cls.NO_EXPIRATION_KEY_PREPEND}:{pi_id}', ansible_with_timestamp)
 
     @classmethod
     def pis(cls):
