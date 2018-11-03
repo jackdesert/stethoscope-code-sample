@@ -81,6 +81,7 @@ class TestLocationPredictor(BaseTest):
                             'beacons': [('x', 10), ('y', 20), ('z', 30)],
                             'vectorized': [2.6666666666666665, 3.0, 3.3333333333333335],
                             'timestamp': 'None',
+                            'opposite_badge_id': None,
                             'imposter_beacons': []}
         self.assertEqual(expected_reading, location['reading'])
 

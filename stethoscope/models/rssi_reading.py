@@ -31,6 +31,7 @@ class RssiReading(Base):
     beacon_3_strength = Column(Integer)
     beacon_4_strength = Column(Integer)
     beacon_5_strength = Column(Integer)
+    opposite_badge_id = Column(Text)
     # TODO Do we really need to store pi_id with this model?
     pi_id       = Column(Text, nullable=False)
     timestamp   = Column(DateTime, default=datetime.now)
@@ -84,6 +85,7 @@ class RssiReading(Base):
         print(f'  {self.beacon_4_id}: {self.beacon_4_strength}')
         print(f'  {self.beacon_5_id}: {self.beacon_5_strength}')
         print(f'timestamp: {self.timestamp}')
+        print(f'opposite_badge: {self.opposite_badge_id}')
 
     @property
     def duplicate(self):

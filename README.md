@@ -166,6 +166,10 @@ Testing
     env/bin/pytest
 
 
+Schema Migrations
+-----------------
+
+Uses alembic for schemaa migrations.
 
 
 Timezone

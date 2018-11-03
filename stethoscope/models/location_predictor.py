@@ -49,6 +49,7 @@ class LocationPredictor:
                                  beacons           = self.reading.beacons,
                                  vectorized        = [float(i) for i in self.reading_vectorized],
                                  timestamp         = str(self.reading.timestamp),
+                                 opposite_badge_id = self.reading.opposite_badge_id,
                                  imposter_beacons  = list(self.imposter_beacons),)
 
         return output

@@ -58,7 +58,7 @@ def create_rssi_reading_view(request):
         return reading.to_dict()
 
 def rssi_reading_params(params):
-    whitelist = {'badge_id', 'pi_id'}
+    whitelist = {'badge_id', 'pi_id', 'opposite_badge_id'}
     output = { k:v for k,v in params.items() if k in whitelist }
 
     counter = 1
