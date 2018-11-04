@@ -14,7 +14,7 @@
 #    env/bin/python stethoscope/models/neural_network.py --load
 
 
-import pdb
+import ipdb
 import numpy as np
 import pickle
 

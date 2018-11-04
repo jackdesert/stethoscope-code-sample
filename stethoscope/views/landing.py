@@ -1,6 +1,6 @@
 from pyramid.response import Response
 from pyramid.view import view_config
-import pdb
+import ipdb
 from ..models import RssiReading
 from ..models.util import PiTracker
 from datetime import datetime, timedelta

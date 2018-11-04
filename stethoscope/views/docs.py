@@ -1,6 +1,6 @@
 from pyramid.response import Response
 from pyramid.view import view_config
-import pdb
+import ipdb
 
 
 @view_config(route_name='docs__rssi_readings',

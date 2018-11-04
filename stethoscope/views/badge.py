@@ -8,7 +8,7 @@ from ..models import RssiReading
 
 from datetime import datetime
 
-import pdb
+import ipdb
 #import json
 #import operator
 

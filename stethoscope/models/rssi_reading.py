@@ -14,7 +14,7 @@ from sqlalchemy import desc
 from .meta import Base
 
 import redis
-import pdb
+import ipdb
 
 class RssiReading(Base):
 

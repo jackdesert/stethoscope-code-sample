@@ -10,7 +10,7 @@ from ..models import TrainingRun
 
 from datetime import datetime
 
-import pdb
+import ipdb
 import json
 import operator
 

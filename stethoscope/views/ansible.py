@@ -1,5 +1,5 @@
 from pyramid.view import view_config
-import pdb
+import ipdb
 from ..models.util import PiTracker
 
 @view_config(route_name='ansible', renderer='string')

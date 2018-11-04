@@ -3,7 +3,7 @@ from stethoscope.models.replication_helper import ReplicationHelper
 from stethoscope.models.rssi_reading import RssiReading
 from stethoscope.models.training_run import TrainingRun
 import os
-import pdb
+import ipdb
 import subprocess
 import sys
 

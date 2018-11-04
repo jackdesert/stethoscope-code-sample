@@ -1,5 +1,5 @@
 from pyramid.config import Configurator
-import pdb
+import ipdb
 
 
 def main(global_config, **settings):

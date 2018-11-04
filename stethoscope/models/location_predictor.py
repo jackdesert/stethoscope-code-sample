@@ -5,7 +5,7 @@ from ..models.util import bip_rooms_hash
 from keras import models
 import numpy as np
 import operator
-import pdb
+import ipdb
 import pickle
 
 class LocationPredictor:

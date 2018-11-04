@@ -1,5 +1,5 @@
 from pyramid import testing
-import pdb
+import ipdb
 import transaction
 import unittest
 

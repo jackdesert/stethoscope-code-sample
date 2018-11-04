@@ -3,7 +3,7 @@ from pyramid.view import exception_view_config
 from pyramid.response import Response
 import json
 import os
-import pdb
+import ipdb
 import requests
 import traceback
 

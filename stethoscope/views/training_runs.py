@@ -9,7 +9,7 @@ from pyramid.response import Response
 from pyramid.view import view_config
 
 import json
-import pdb
+import ipdb
 
 
 @view_config(route_name='training_runs__index',

@@ -1,7 +1,7 @@
 from pyramid import testing
 
 import datetime
-import pdb
+import ipdb
 import transaction
 import unittest
 from stethoscope.test.base_test import BaseTest

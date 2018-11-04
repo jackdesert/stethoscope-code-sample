@@ -1,7 +1,7 @@
 from datetime import datetime
 import requests
 import redis
-import pdb
+import ipdb
 
 def bip_rooms():
     # TODO If these rooms change under foot---what does that do to our keras model?

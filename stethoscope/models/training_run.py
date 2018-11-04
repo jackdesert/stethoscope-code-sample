@@ -15,7 +15,7 @@ from collections import namedtuple
 from .meta import Base
 from .rssi_reading import RssiReading
 import numpy as np
-import pdb
+import ipdb
 
 # namedtuple must be defined outside the class so the unpickler can find it
 KerasMetadata = namedtuple('KerasMetadata', ['room_ids', 'beacon_id_to_beacon_index', 'strength_range', 'min_strength'])
