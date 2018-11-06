@@ -27,16 +27,16 @@ class PiTracker:
         cls.REDIS.set(f'{cls.NO_EXPIRATION_KEY_PREPEND}:{pi_id}', ansible_with_timestamp)
 
     @classmethod
-    def pis(cls):
-        return cls._pis_by_key_prepend(cls.NO_EXPIRATION_KEY_PREPEND)
+    def pis(cls, keysOnly=False):
+        return cls._pis_by_key_prepend(cls.NO_EXPIRATION_KEY_PREPEND, keysOnly)
 
     @classmethod
-    def active_pis(cls):
-        return cls._pis_by_key_prepend(cls.RECENT_KEY_PREPEND)
+    def active_pis(cls, keysOnly=False):
+        return cls._pis_by_key_prepend(cls.RECENT_KEY_PREPEND, keysOnly)
 
 
     @classmethod
-    def _pis_by_key_prepend(cls, key_prepend):
+    def _pis_by_key_prepend(cls, key_prepend, keysOnly):
         keys = set()
         cursor = None
         while cursor != 0:
@@ -47,6 +47,8 @@ class PiTracker:
                 keys.add(key)
         if not keys:
             return []
+        if keysOnly:
+            return keys
         return sorted(cls.REDIS.mget(keys))
 
 

@@ -10,6 +10,7 @@ from .training_run import TrainingRun  # flake8: noqa
 from .neural_network import NeuralNetwork  # flake8: noqa
 from .neural_network_helper import NeuralNetworkHelper  # flake8: noqa
 from .location_predictor import LocationPredictor
+from .util import PiTracker
 
 # run configure_mappers after defining all of the models to ensure
 # all relationships can be setup
