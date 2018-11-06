@@ -34,7 +34,10 @@ class TestLocationPredictor(BaseTest):
                            beacon_3_id='z',
                            beacon_1_strength=10,
                            beacon_2_strength=20,
-                           beacon_3_strength=30)
+                           beacon_3_strength=30,
+                           opposite_badge_id='c',
+                           position=2,
+                           motion=3)
 
 
     def metadata(self):
@@ -81,7 +84,9 @@ class TestLocationPredictor(BaseTest):
                             'beacons': [('x', 10), ('y', 20), ('z', 30)],
                             'vectorized': [2.6666666666666665, 3.0, 3.3333333333333335],
                             'timestamp': 'None',
-                            'opposite_badge_id': None,
+                            'position': 2,
+                            'motion': 3,
+                            'opposite_badge_id': 'c',
                             'imposter_beacons': []}
         self.assertEqual(expected_reading, location['reading'])
 
