@@ -77,7 +77,7 @@ when you called `pyenv local 3.6.x`
 
 ### Install Other Prerequisites
 
-    sudo apt install -y htop nginx python3-venv redis-server
+    sudo apt install -y htop nginx python3-venv redis-server postgresql
 
 
 
@@ -98,7 +98,7 @@ Getting Started (This step generated from cookiecutter)
 - Upgrade packaging tools [and specific packages]
 
     # If trouble installing tensorflow, omit "--upgrade" option
-    env/bin/pip install --upgrade pip ipdb setuptools redis markdown requests alembic numpy keras tensorflow
+    env/bin/pip install --upgrade pip ipdb setuptools redis markdown requests alembic numpy keras tensorflow psycopg2
 
 - Install the project in editable mode with its testing requirements.
 
@@ -115,6 +115,31 @@ Getting Started (This step generated from cookiecutter)
 - Run your project.
 
     KERAS_BACKEND=theano env/bin/pserve development.ini --reload
+
+
+Postgresql (Optional)
+---------------------
+
+#TODO does user need to be a superuser?
+
+Create a mortal user
+  sudo -u postgres createuser steth
+
+Set password and create database
+  sudo -u postgres psql
+  > \password steth
+  > create database steth with owner steth;
+  CREATE DATABASE
+
+
+
+Alternatively, connect to any database that already exists (shown here
+connecting to database named "postgres") so you can create the database
+  sudo -u postgres psql postgres -U steth
+  > create database
+
+
+
 
 
 Redis
@@ -169,7 +194,9 @@ Testing
 Schema Migrations
 -----------------
 
-Uses alembic for schemaa migrations.
+Uses alembic for schema migrations.
+
+    env/bin/alembic upgrade head
 
 
 Timezone

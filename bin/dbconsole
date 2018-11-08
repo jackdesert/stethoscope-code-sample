@@ -1,0 +1,6 @@
+#! /bin/bash
+
+CMD='sudo -u postgres /usr/local/pgsql/bin/psql steth -U steth'
+
+echo $CMD
+$CMD
