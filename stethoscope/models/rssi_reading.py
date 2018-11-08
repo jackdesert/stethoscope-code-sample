@@ -159,4 +159,4 @@ class RssiReading(Base):
 
 
 
-Index('rssi_readings__badge_id', RssiReading.badge_id)
+Index('rssi_readings__timestamp', RssiReading.timestamp)
