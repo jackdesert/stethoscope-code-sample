@@ -120,26 +120,17 @@ Getting Started (This step generated from cookiecutter)
 Postgresql (Optional)
 ---------------------
 
-#TODO does user need to be a superuser?
+Create a mortal user with the same postgres username as your operating-system
+username so you can use "peer" authentication
 
-Create a mortal user
-  sudo -u postgres createuser steth
+    sudo -u postgres createuser ubuntu
 
 Set password and create database
-  sudo -u postgres psql
-  > \password steth
-  > create database steth with owner steth;
-  CREATE DATABASE
 
-
-
-Alternatively, connect to any database that already exists (shown here
-connecting to database named "postgres") so you can create the database
-  sudo -u postgres psql postgres -U steth
-  > create database
-
-
-
+    sudo -u postgres psql
+    > \password ubuntu
+    > create database steth_db with owner ubuntu;
+    CREATE DATABASE
 
 
 Redis
