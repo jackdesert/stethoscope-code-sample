@@ -7,17 +7,15 @@ class ReplicationHelper:
         self.table_name = klass.__table__.name
 
     def insert_bulk(self, objects):
-        # Run single inserts inside a transaction to boost performance
-        sql = '\n\nBEGIN TRANSACTION;\n'
+        sql = ''
         for obj in objects:
             sql += self.insert_single(obj)
-
-        sql += 'COMMIT;\n'
 
         return sql
 
     def insert_single(self, obj):
-        sql = f'INSERT INTO {self.table_name} VALUES ('
+        csv_column_names = ', '.join(self._columns())
+        sql = f'INSERT INTO {self.table_name} ({csv_column_names}) VALUES ('
         values = []
 
         for attribute in self._columns():
@@ -36,8 +34,8 @@ class ReplicationHelper:
             # Plain string
             return str(value)
         elif isinstance(value, str) or isinstance(value, datetime):
-            # Quoted string
-            return f'"{value}"'
+            # Quoted string (Use single quotes inside string for postgres)
+            return f"'{value}'"
         elif value == None:
             return 'NULL'
         else:

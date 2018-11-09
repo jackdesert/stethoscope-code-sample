@@ -15,4 +15,6 @@ HISTORY
            And they would time out afte 27 seconds.
 2018-11-07 Deployed on postgres instead of sqlite to improve throughput
 2018-11-08 Added index rssi_readings__timestamp which speeds up /location endpoint 2x
+2018-11-08 Upgraded from t2.nano to t3.medium (now two VCPUs and EBS-Optimized)
+           Because the location endpoint was suffering.
 

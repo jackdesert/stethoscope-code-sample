@@ -22,31 +22,18 @@ def main(filename, dbsession):
     reading_sql = reading_helper.insert_bulk(rssi_readings)
 
     with open(filename, 'w') as f:
-        f.write(schema_sql())
         f.write(trun_sql)
         f.write(reading_sql)
 
     success(filename)
 
 
-def schema_sql():
-    db_file = 'stethoscope.sqlite'
-
-    if not os.path.isfile(db_file):
-        print('ERROR: database file not found.')
-        print('Please run this command from the root of the project.')
-        sys.exit()
-
-    process = subprocess.run(['sqlite3', db_file, '.schema'],
-                             stdout=subprocess.PIPE)
-    return process.stdout.decode()
 
 
 def success(filename):
     print('SUCCESS!')
     print(f'Database backup saved in {filename}')
-    print('Create a fresh database like this:')
-    print(f'  cat {filename} | sqlite3 /path/to/new/database')
+    print('Note backup does not include schema')
 
 
 def usage(this_filename):

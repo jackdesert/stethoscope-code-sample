@@ -98,7 +98,7 @@ Getting Started (This step generated from cookiecutter)
 - Upgrade packaging tools [and specific packages]
 
     # If trouble installing tensorflow, omit "--upgrade" option
-    env/bin/pip install --upgrade pip ipdb setuptools redis markdown requests alembic numpy keras tensorflow psycopg2
+    env/bin/pip install --upgrade pip ipdb setuptools redis markdown requests alembic numpy keras tensorflow psycopg2-binary
 
 - Install the project in editable mode with its testing requirements.
 
@@ -114,7 +114,7 @@ Getting Started (This step generated from cookiecutter)
 
 - Run your project.
 
-    KERAS_BACKEND=theano env/bin/pserve development.ini --reload
+    env/bin/pserve development.ini --reload
 
 
 Postgresql (Optional)
@@ -132,12 +132,23 @@ Set password and create database
     > create database steth_db with owner ubuntu;
     CREATE DATABASE
 
+For simply creating the database, you could also use this:
+
+  sudo -u postgres createdb steth_db --owner=ubuntu
+
 
 Redis
 -----
 
 This project uses redis as part of its deduplication scheme.
 Docs are at https://github.com/andymccurdy/redis-py
+
+
+Keras Files
+-----------
+
+If you are migrating to a new box, you will need to copy the files from
+stethoscope/keras/ to the new server
 
 
 Nginx
@@ -157,6 +168,32 @@ It's considered more secure to not broadcast "nginx (version)/(os_version)" with
 Open /etc/nginx/nginx.conf and uncomment this line:
 
     server_tokens off;
+
+
+### Nginx Logging
+
+For improved nginx logging format, open /etc/nginx/nginx.conf
+
+Remove this line:
+
+    access_log /var/log/nginx/access.log
+
+and add these two:
+
+    log_format with_duration '$time_iso8601 $status $request_time $upstream_response_time $request_method $host$uri';
+
+    access_log /var/log/nginx/access.log with_duration;
+
+Then restart nginx
+
+
+
+Let's Encryt
+------------
+
+See https://certbot.eff.org/
+
+
 
 
 Systemd
@@ -250,7 +287,7 @@ Train the Keras Model using TrainingRuns
 ----------------------------------------
 
 When you are ready to train a large dataset, it is recommended to
-download the sqlite database to your local machine (which likely
+dump the database to disk, download it to your your local machine (which likely
 has more memory than the production box) and train the keras model locally.
 
 Afterward, simply push keras/model.h5 and keras/metadata.pickle
@@ -351,8 +388,17 @@ you would want to store location CHANGES so you're not saving so much data.
 Restoring From a Database Backup
 --------------------------------
 
-    rm stethoscope.sqlite
-    cat backups/<filename> | sqlite3 stethoscope.sqlite
+Create an empty database
+
+    sudo -u postgres createdb steth_db --owner=ubuntu
+
+Run migrations
+
+    env/bin/alembic upgrade head
+
+Import the backup
+
+    sudo -u postgres psql -d steth_db -f /path/to/backup/file
 
 
 
@@ -362,13 +408,11 @@ BACKLOG
   * Find out where timezone is set for database
     - at one point new readings were showing up as "7 hours ago"
   * Think about ways of visualizing the data coming in
-    - allow download of sqlite database?
   * Architect where button press data will go. Elitecarerails?
   * Get pyramid to return 500 when server breaks (currently returns 404)
   * Slack notifications when something breaks
   * RATIONALE
     - why waitress
-    - why sqlite
     - why pyramid
     - why python
     - why filter
