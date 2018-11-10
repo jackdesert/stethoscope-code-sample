@@ -1,0 +1,29 @@
+#! /bin/bash
+
+set -e
+
+echo Dumping production database to disk via ansible
+ansible all -a "pg_dump -f /tmp/steth_db.sql steth_db" -u ubuntu --private-key ~/.ssh/bip-a.pem
+
+echo Downloading the Dump to your local machine
+scp -i ~/.ssh/bip-a.pem ubuntu@bip-stethoscope.elitecare.com:/tmp/steth_db.sql /tmp
+
+
+echo ??????????????????????
+echo Are you sure you are on your LOCAL machine?
+read ANSWER
+if [ $ANSWER != 'yes' ];then
+  echo Exiting
+  exit
+fi
+
+echo Deleting and Recreating Your Local Database
+sudo -u postgres dropdb --if-exists steth_db
+sudo -u postgres createdb steth_db --owner=ubuntu
+
+echo Importing the Data File
+sudo -u postgres psql -d steth_db -f /tmp/steth_db.sql
+
+
+echo Done!
+echo You may wish to keep a copy of /tmp/steth_db.sql in a durable location
