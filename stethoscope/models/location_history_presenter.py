@@ -1,0 +1,90 @@
+from ..models.rssi_reading import RssiReading
+from datetime import datetime
+from datetime import timedelta
+import ipdb
+
+class LocationHistoryPresenter:
+
+    DATE_FORMAT = '%Y-%m-%d'
+
+    SUPPORTED_ALGORITHMS = ('raw', 'bayes')
+    SUPPORTED_GRAINS = (None, 60, 600, 3600)
+    SUPPORTED_RETURN_VALUES = ('room_id', 'room_name')
+
+    DEFAULT_ALGORITHM = 'raw'
+    DEFAULT_GRAIN = None
+    DEFAULT_RETURN_VALUE = 'room_name'
+
+    # Pass in keras_model and keras_metadata when running tests
+    def __init__(self, session,
+                       location_predictor,
+                       badge_id,
+                       algorithm=DEFAULT_ALGORITHM,
+                       date_string=None,
+                       grain=DEFAULT_GRAIN,
+                       return_value=DEFAULT_RETURN_VALUE):
+        self.session = session
+        self.predictor = location_predictor
+        self.badge_id = badge_id
+        self._set_timestamps(date_string)
+        self.grain = grain
+        self.return_value = return_value
+        self.algorithm = algorithm
+        assert algorithm    in self.SUPPORTED_ALGORITHMS
+        assert grain        in self.SUPPORTED_GRAINS
+        assert return_value in self.SUPPORTED_RETURN_VALUES
+
+
+    def present(self):
+        self._fetch_rssi_readings()
+        self._generate()
+        metadata = dict(   algorithm = self.algorithm,
+                               grain = self.grain,
+                        return_value = self.return_value)
+
+        metadata['num_priors'] = len(self.predictor.priors or [])
+
+        return dict(data=self.data, metadata=metadata)
+
+    def _generate(self):
+        predictor = self.predictor
+        data = []
+
+        first_index = 0 # Because most probable room is listed first
+        second_index = 0 # room_id
+        if self.return_value == 'room_name':
+            second_index = 2 # room_name
+
+
+        for reading in self._rssi_readings:
+            predictor.reading = reading
+            timetamp = str(reading.timestamp)
+            location = predictor.location
+            if location.get('errors'):
+                value = None
+            else:
+                value = location[self.algorithm][first_index][second_index]
+            row = (timetamp, value)
+            data.append(row)
+
+        # Add one last value so that timeline chart will go up to it
+        period_end = (str(self.end_timestamp), 'Period End')
+        data.append(period_end)
+
+        self.data = data
+
+    def _fetch_rssi_readings(self):
+        rr = self.session.query(RssiReading) \
+                .filter_by(badge_id=self.badge_id) \
+                .filter(RssiReading.timestamp.between(self.start_timestamp,
+                                                      self.end_timestamp))
+        self._rssi_readings = rr
+
+    def _set_timestamps(self, date_string):
+        if not date_string:
+            date_string = datetime.now().strftime(self.DATE_FORMAT)
+
+        self.start_timestamp = datetime.strptime(date_string, self.DATE_FORMAT)
+        self.end_timestamp   = self.start_timestamp + timedelta(days=1)
+
+

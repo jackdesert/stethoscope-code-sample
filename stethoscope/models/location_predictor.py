@@ -1,6 +1,6 @@
 from ..models import NeuralNetwork
 from ..models import NeuralNetworkHelper
-from ..models.util import bip_rooms_hash
+from ..models.util import bip_rooms_hash as bip_rooms_hash_callable
 
 from keras import models
 import numpy as np
@@ -13,7 +13,7 @@ class LocationPredictor:
     # This model will fail to load if these files not available
     KERAS_MODEL    = NeuralNetwork.saved_model()
     KERAS_METADATA = NeuralNetwork.saved_metadata()
-    BIP_ROOMS_HASH = bip_rooms_hash()
+    BIP_ROOMS_HASH = bip_rooms_hash_callable()
 
     DEFAULT_BAYES_WEIGHT = 1.0
     UNKNOWN_ROOM = 'unknown'

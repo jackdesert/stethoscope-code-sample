@@ -21,3 +21,10 @@ def api_docs_location_view(request):
 
 
 
+@view_config(route_name='docs__location_history',
+             renderer='doc/api/location_history.md')
+
+def api_docs_location_history_view(request):
+    return {'one': 'one', 'project': 'stethoscope'}
+
+

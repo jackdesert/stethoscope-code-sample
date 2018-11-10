@@ -29,7 +29,7 @@ Payload (POST only)
 Request Data Types
 ------------------
 
-  * room_id:   uuid. Must be one of the uuids given by [this elitecarerails endpoint](https://bip.elitecare.com/api/stethoscope/rooms_insecure)
+  * room_id:   uuid. Any uuids that are not listed by [this elitecarerails endpoint](https://bip.elitecare.com/api/stethoscope/rooms_insecure) will be ignored
   * weight:    number (Weights need not add to 100%)
 
 
@@ -45,7 +45,6 @@ Status Codes
     * 200: Success
     * 400: Invalid Payload
     * 404: Badge not active in last 60 seconds
-    * 409: One or more supplied prior room ids not found in bip_rooms
     * 500: Server error
 
 

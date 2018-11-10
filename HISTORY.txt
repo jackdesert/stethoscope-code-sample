@@ -17,4 +17,5 @@ HISTORY
 2018-11-08 Added index rssi_readings__timestamp which speeds up /location endpoint 2x
 2018-11-08 Upgraded from t2.nano to t3.medium (now two VCPUs and EBS-Optimized)
            Because the location endpoint was suffering.
+2018-11-09 Retrained keras model with Geary's training runs
 
