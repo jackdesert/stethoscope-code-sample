@@ -52,6 +52,29 @@ class PiTracker:
         return sorted(cls.REDIS.mget(keys))
 
 
+class PrudentIterator:
+    # This class allows you to check whether there are remaining elements
+    # before you actually fetch them
+    def __init__(self, elements):
+        self._elements = elements
+        self._index = 0
+        self._max_index = len(elements) - 1
+
+    @property
+    def available(self):
+        return self._index <= self._max_index
+
+    @property
+    def peek(self):
+        # View the item without advancing the index
+        return self._elements[self._index]
+
+    @property
+    def next(self):
+        output = self.peek
+        self._index += 1
+        return output
+
 
 
 
