@@ -1,5 +1,5 @@
 allow 208.100.43.186;  # Jack's VPN
-allow 35.164.167.43;   # Stethoscope's IP, where website-monitor is running
+allow 54.190.220.179;  # website-monitor
 allow 173.137.176.200; # Bill's home network
 allow 73.190.115.13;   # Tony
 
