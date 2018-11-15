@@ -14,9 +14,9 @@ from datetime import datetime, timedelta
 
 @view_config(route_name='landing', renderer='../templates/landing.jinja2')
 def landing_view(request):
-    one_minute_ago = datetime.now() - timedelta(seconds=60)
+    n_seconds_ago = datetime.now() - timedelta(seconds=RssiReading.RECENT_SECONDS)
     badge_rows = request.dbsession.query(RssiReading.badge_id) \
-                   .filter(RssiReading.timestamp > one_minute_ago) \
+                   .filter(RssiReading.timestamp > n_seconds_ago) \
                    .distinct(RssiReading.badge_id) \
                    .all()
 

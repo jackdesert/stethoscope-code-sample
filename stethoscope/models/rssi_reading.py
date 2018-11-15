@@ -50,7 +50,7 @@ class RssiReading(Base):
     # See doc/deduplication_scheme.md
     DEDUP_PERIOD_IN_MILLISECONDS = 5500
 
-    RECENT_SECONDS = 60
+    RECENT_SECONDS = 120
 
     NULL_BEACON_STRENGTH = -128
 
