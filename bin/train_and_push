@@ -1,0 +1,29 @@
+#! /bin/bash
+
+set -e
+
+echo ??????????????????????
+echo Did you already clone the production database?
+read ANSWER
+if [ $ANSWER != 'yes' ];then
+  echo Exiting
+  exit
+fi
+
+
+env/bin/python stethoscope/models/neural_network.py --save
+
+
+echo ??????????????????????
+echo Deploy files?
+read ANSWER
+if [ $ANSWER != 'yes' ];then
+  echo Exiting
+  exit
+fi
+
+scp -i ~/.ssh/bip-a.pem keras/metadata.pickle keras/model.h5 $steth2:stethoscope/keras/.
+
+echo You may want to log in to stethoscope and restart waitress
+echo You may want to verify timestamps of files on server
+
