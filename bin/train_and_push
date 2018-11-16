@@ -22,7 +22,7 @@ if [ $ANSWER != 'yes' ];then
   exit
 fi
 
-scp -i ~/.ssh/bip-a.pem keras/metadata.pickle keras/model.h5 $steth2:stethoscope/keras/.
+scp -i ~/.ssh/bip-a.pem keras/metadata.pickle keras/model.h5 ubuntu@bip-stethoscope.elitecare.com:stethoscope/keras/.
 
 echo You may want to log in to stethoscope and restart waitress
 echo You may want to verify timestamps of files on server
