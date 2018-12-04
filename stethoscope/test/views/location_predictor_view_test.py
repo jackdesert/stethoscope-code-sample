@@ -52,7 +52,7 @@ class TestLocationPredictorView(BaseTest):
 
         self.assertEqual(404, req.response.status_code)
 
-        self.assertEqual(info, {'error': 'No RssiReadings received from badge 2 in last 60 seconds'})
+        self.assertEqual(info, {'error': 'No RssiReadings received from badge 2 in last 120 seconds'})
 
     def test_happy_path_no_priors(self):
         reading = self.reading()

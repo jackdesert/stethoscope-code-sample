@@ -117,8 +117,8 @@ Getting Started (This step generated from cookiecutter)
     env/bin/pserve development.ini --reload
 
 
-Postgresql (Optional)
----------------------
+Postgresql
+----------
 
 Create a mortal user with the same postgres username as your operating-system
 username so you can use "peer" authentication
@@ -180,7 +180,7 @@ Remove this line:
 
 and add these two:
 
-    log_format with_duration '$time_iso8601 $status $request_time $upstream_response_time $request_method $host$uri';
+    log_format with_duration '$time_iso8601 $status $request_time $upstream_response_time $request_method $host$uri $http_badgeid';
 
     access_log /var/log/nginx/access.log with_duration;
 
@@ -382,6 +382,28 @@ wouldn't care.
 
 If you want to know where a resident was over the course of a year,
 you would want to store location CHANGES so you're not saving so much data.
+
+
+
+The Need for a Data Warehouse
+-----------------------------
+
+Stethoscope can be considered an ephemeral data store.
+Ephemeral in the sense that when you add additional training runs
+(and optionally add beacons)
+and ingest them (train the keras model), if you then ask stethoscope
+to predict the location of an RssiReading that was created before the
+new training runs were ingested (and beacons optionally added)
+then Stethoscope cannot reliably predict the location for that RssiReading.
+
+Hence, before adding additional training runs to the sytem, all
+data should be shipped off to a data warehouse. That way each
+rssi reading is already represented by the correct room, and
+that room will not change as new training runs and/or beacons are added.
+
+As of Dec 4, 2018 we do not have a data warehouse. But we plan to add one
+later this month.
+
 
 
 

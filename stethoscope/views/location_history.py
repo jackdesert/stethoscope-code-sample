@@ -10,7 +10,7 @@ import ipdb
 def location_history_view(request):
     badge_id = request.matchdict.get('badge_id')
 
-    whitelist = ['algorithm', 'grain', 'date_string', 'return_value']
+    whitelist = ['algorithm', 'grain', 'date', 'return_value']
 
     if request.body:
         priors = request.json_body.get('priors')
@@ -23,6 +23,12 @@ def location_history_view(request):
 
     if kwargs.get('grain'):
         kwargs['grain'] = int(kwargs['grain'])
+
+    # rename "date" key to "date_string"
+    if 'date' in kwargs:
+        date_string = kwargs['date']
+        kwargs['date_string'] = date_string
+        del kwargs['date']
 
 
     reading = RssiReading()
