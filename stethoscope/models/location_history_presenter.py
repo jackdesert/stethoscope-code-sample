@@ -1,4 +1,6 @@
+from ..models.neural_network_helper import NoMatchingBeaconsError
 from ..models.rssi_reading import RssiReading
+from ..models.training_run import TrainingRun
 from ..models.util import PrudentIterator
 from collections import defaultdict
 from datetime import datetime
@@ -39,6 +41,7 @@ class LocationHistoryPresenter:
         self.grain = grain
         self.return_value = return_value
         self.algorithm = algorithm
+        self.last_approved_timestamp = TrainingRun.last_approved_timestamp(session)
         assert algorithm    in self.SUPPORTED_ALGORITHMS
         assert return_value in self.SUPPORTED_RETURN_VALUES
         assert (grain == None) or isinstance(grain, int)
@@ -50,7 +53,8 @@ class LocationHistoryPresenter:
         self._summarize()
         metadata = dict(   algorithm = self.algorithm,
                                grain = self.grain,
-                        return_value = self.return_value)
+                        return_value = self.return_value,
+                        last_approved_training_run = str(self.last_approved_timestamp))
 
         metadata['num_priors'] = len(self.predictor.priors or [])
 
@@ -112,8 +116,18 @@ class LocationHistoryPresenter:
         for reading in self._rssi_readings:
             predictor.reading = reading
             timetamp = reading.timestamp
-            location = predictor.location
-            if location.get('errors'):
+
+            error = None
+            try:
+                location = predictor.location
+            except NoMatchingBeaconsError as ee:
+                error = 'NO MATCHING BEACONS'
+
+            if reading.timestamp < self.last_approved_timestamp:
+                value = 'READING PREDATES TR'
+            elif error:
+                value = error
+            elif location.get('errors'):
                 value = None
             else:
                 value = location[self.algorithm][first_index][second_index]

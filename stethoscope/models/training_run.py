@@ -7,6 +7,7 @@ from sqlalchemy import (
     Integer,
     Text,
     text,
+    desc,
 )
 from sqlalchemy.sql import func
 from collections import namedtuple
@@ -74,6 +75,27 @@ class TrainingRun(Base):
         print(f'badge: {self.badge_id}')
         print(f'start_timestamp: {self.start_timestamp}')
         print(f'end_timestamp: {self.end_timestamp}')
+
+    # Stethoscope cannot reliably predict location for rssi events created
+    # when there was a different set of training runs and/or a different
+    # set of beacons active. Therefore we ask "When was the lasts approved
+    # training run?", meaning which is the last training run where Jack
+    # has manually updated the "created_by" column.
+    # Because manually updating the "created_by" column is what Jack
+    # does when he trains the keras model.
+    @classmethod
+    def last_approved_timestamp(cls, session):
+        trun = session.query(cls).\
+                    filter(cls.end_timestamp.isnot(None)).\
+                    filter(cls.created_by.isnot(None)).\
+                    order_by(desc(cls.end_timestamp)).\
+                    first()
+        if trun:
+            return trun.end_timestamp
+        else:
+            # Test environment may not have training runs
+            return datetime.now()
+
 
     @classmethod
     def with_ids(cls, session, ids):

@@ -15,6 +15,9 @@ class NoMatchingBeaconsError(Exception):
     '''
     # TODO alert engineers when /:badge_id/location is called that uses
     # an RssiReading containing any beacons that were not present during training
+    @property
+    def __name__(self):
+        return 'NoMatchingBeaconsError'
 
 
 class NeuralNetworkHelper:

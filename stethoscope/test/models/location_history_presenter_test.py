@@ -5,10 +5,16 @@ import pytest
 from stethoscope.test.base_test import BaseTest
 from stethoscope.models.location_history_presenter import LocationHistoryPresenter
 
+
 class TestLocationHistoryPresenter(BaseTest):
 
+    # call setUp() so that database will be initialized
+    def setUp(self):
+        super(TestLocationHistoryPresenter, self).setUp()
+        self.init_database()
+
     def build_presenter(self, args):
-        return LocationHistoryPresenter('fake-session',
+        return LocationHistoryPresenter(self.session,
                                         'fake-predictor',
                                         'BIP1234',
                                         **args)
