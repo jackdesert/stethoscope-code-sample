@@ -2,6 +2,7 @@ allow 208.100.43.186;  # Jack's VPN
 allow 54.190.220.179;  # website-monitor
 allow 173.137.176.200; # Bill's home network
 allow 73.190.115.13;   # Tony
+allow 97.120.191.33;   # Mark
 
 # Find out who these IP addresses are
 allow 73.240.210.233; # POST /rssi_readings
