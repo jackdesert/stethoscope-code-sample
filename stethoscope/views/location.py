@@ -39,11 +39,18 @@ def location_view(request):
     predictor = LocationPredictor(reading, priors=priors)
 
     try:
-        return predictor.location
+        output = predictor.location
     except NoMatchingBeaconsError as ee:
         request.response.status_code = 409
         msg = ee.__repr__()
-        return dict(error=msg)
+        output = dict(error=msg)
+
+    if 'reading' in output:
+        count = RssiReading.recent_count_for_badge(request.dbsession, badge_id, 600)
+        output['reading']['num_readings_last_10_min'] = count
+
+    return output
+
 
 
 
