@@ -77,6 +77,9 @@ class TestRssiReadingDuplicate(BaseTest):
         rr = self.reading()
         self.assertFalse(rr.duplicate, 'first time expected to be unique')
 
+        rr.pi_id = 'something-different'
+        self.assertTrue(rr.duplicate, 'pi_id does not affect uniqueness')
+
         rr.badge_id += '-'
         self.assertFalse(rr.duplicate, 'expected unique del badge_id changed')
 

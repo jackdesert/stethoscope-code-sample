@@ -1,6 +1,7 @@
 from ..models import NeuralNetwork
 from ..models import NeuralNetworkHelper
 from ..models.util import bip_rooms_hash as bip_rooms_hash_callable
+from ..models.util import PiName
 
 from keras import models
 import numpy as np
@@ -44,7 +45,8 @@ class LocationPredictor:
 
         # Include information about the reading
         output['reading'] = dict(id                = self.reading.id,
-                                 pi_id             = self.reading.pi_id,
+                                 first_pi_id       = self.reading.pi_id,
+                                 first_pi_name     = PiName.by_id(self.reading.pi_id),
                                  badge_id          = self.reading.badge_id,
                                  badge_strength    = self.reading.badge_strength,
                                  beacons           = self.reading.beacons,

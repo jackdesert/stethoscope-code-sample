@@ -12,6 +12,22 @@ def bip_rooms():
 def bip_rooms_hash():
     return { room_id: room_name for (room_id, room_name) in bip_rooms() }
 
+class PiName:
+    NAMES =  {'000000001351facb': 'Larch 2nd Floor (WITH TV)',
+              '0000000066c55ea2': 'Tabor 2nd Floor (WITH TV)',
+              '0000000088d14482': 'Larch/Tabor 2nd Floor Middle',
+              '00000000336e3945': 'Larch/Tabor 3rd Floor Middle',
+              '00000000f6ef3162': 'Larch 3rd Floor',
+              '00000000accba0fa': 'Tabor 3rd Floor',
+              '000000009dc13fc1': 'Tabor 3D (Suite)',
+              '000000007f5c3da0': 'Cascade Xerox',
+             }
+
+    @classmethod
+    def by_id(cls, id):
+        return cls.NAMES.get(id) or id
+
+
 class PiTracker:
     REDIS = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
     RECENT_KEY_PREPEND        = 'pi-recent-pi'
