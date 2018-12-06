@@ -80,11 +80,14 @@ class TestRssiReadingDuplicate(BaseTest):
         rr.pi_id = 'something-different'
         self.assertTrue(rr.duplicate, 'pi_id does not affect uniqueness')
 
+        rr.badge_strength = -2
+        self.assertTrue(rr.duplicate, 'badge_strength does not affect uniqueness')
+
+
+
+
         rr.badge_id += '-'
         self.assertFalse(rr.duplicate, 'expected unique del badge_id changed')
-
-        rr.badge_strength += 1
-        self.assertFalse(rr.duplicate, 'expected unique del badge_strength changed')
 
         rr.beacon_1_id += '-'
         self.assertFalse(rr.duplicate, 'expected unique del beacon_1_id changed')
