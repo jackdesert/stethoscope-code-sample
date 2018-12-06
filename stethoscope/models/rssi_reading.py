@@ -161,7 +161,10 @@ class RssiReading(Base):
     @classmethod
     def recent_count_for_badge(cls, session, badge_id, seconds):
         recently = datetime.now() - timedelta(seconds=seconds)
-        return session.query(cls).filter(cls.timestamp > recently).count()
+        return session.query(cls).\
+                 filter(cls.timestamp > recently).\
+                 filter_by(badge_id=badge_id).\
+                 count()
 
 
 

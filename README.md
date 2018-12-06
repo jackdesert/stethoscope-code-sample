@@ -242,6 +242,15 @@ Set it in your systemd unit file, if you run from systemd.
 Set it in your ~/.bashrc if you invoke manually.
 
 
+Postgresql Timezone
+-------------------
+
+If you want to be able to run queries that use the `current_timestamp` function
+in postgres and have them make sense, you will want to set the timezone in /etc/postgresql/10/main/postgresql.conf:
+
+    timezone = 'America/Los_Angeles'
+
+
 Performance Load Testing of POST /rssi_readings
 -----------------------------------------------
 
