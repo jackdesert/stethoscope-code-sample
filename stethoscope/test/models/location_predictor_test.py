@@ -28,6 +28,7 @@ class TestLocationPredictor(BaseTest):
 
     def reading(self):
         return RssiReading(badge_id='a',
+                           badge_strength=-70,
                            pi_id='b',
                            beacon_1_id='x',
                            beacon_2_id='y',
@@ -81,6 +82,7 @@ class TestLocationPredictor(BaseTest):
         expected_reading = {'id': None,
                             'pi_id': 'b',
                             'badge_id': 'a',
+                            'badge_strength': -70,
                             'beacons': [('x', 10), ('y', 20), ('z', 30)],
                             'vectorized': [2.6666666666666665, 3.0, 3.3333333333333335],
                             'timestamp': 'None',

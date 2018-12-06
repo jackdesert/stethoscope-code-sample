@@ -20,7 +20,8 @@ class RssiReading(Base):
 
     __tablename__ = 'rssi_readings'
     id = Column(Integer, primary_key=True)
-    badge_id    = Column(Text, nullable=False)
+    badge_id       = Column(Text, nullable=False)
+    badge_strength = Column(Integer)
     beacon_1_id = Column(Text)
     beacon_2_id = Column(Text)
     beacon_3_id = Column(Text)
@@ -40,7 +41,8 @@ class RssiReading(Base):
 
     # Note badge_id is included, but not pi_id because we will get the
     # same payload from multiple pis, and we only need it from one
-    DEDUP_FIELDS = ('badge_id', 'beacon_1_id', 'beacon_2_id', 'beacon_3_id',
+    DEDUP_FIELDS = ('badge_id', 'badge_strength',
+                    'beacon_1_id', 'beacon_2_id', 'beacon_3_id',
                     'beacon_4_id', 'beacon_5_id',
                     'beacon_1_strength', 'beacon_2_strength', 'beacon_3_strength',
                     'beacon_4_strength', 'beacon_5_strength')
@@ -59,6 +61,8 @@ class RssiReading(Base):
         errors = []
         if not self.badge_id:
             errors.append('badge_id missing')
+        if not self.badge_strength:
+            errors.append('badge_strength missing')
         if not self.pi_id:
             errors.append('pi_id missing')
         if self.beacon_1_strength == None:
@@ -79,6 +83,7 @@ class RssiReading(Base):
     def print(self):
         print(f'id: {self.id}')
         print(f'badge: {self.badge_id}')
+        print(f'badge_strength: {self.badge_strength}')
         print(f'pi: {self.pi_id}')
         print('beacons:')
         print(f'  {self.beacon_1_id}: {self.beacon_1_strength}')

@@ -28,11 +28,13 @@ class TestRssiReadingsView(BaseTest):
         # Instantiating out of order to make sure
         # it is sorting *by value*
         return dict(badge_id='badge_0',
+                    badge_strength=-70,
                     pi_id='pi_0',
                     beacons=dict(a=10, b=30, d=20, e=40, c=50, f=0))
 
     def params_funky_beacons(self):
         return dict(badge_id='badge_0',
+                    badge_strength=-70,
                     pi_id='pi_0',
                     beacons=dict(a=10, b=None))
 
@@ -44,6 +46,7 @@ class TestRssiReadingsView(BaseTest):
         req.body = json.dumps(self.params_funky_beacons())
         info = create_rssi_reading_view(req)
         self.assertEqual(info, {'badge_id': 'badge_0',
+                                'badge_strength': -70,
                                 'pi_id': 'pi_0',
                                 'beacon_1_id': 'a',
                                 'beacon_1_strength': 10 },
@@ -57,6 +60,7 @@ class TestRssiReadingsView(BaseTest):
         req.body = json.dumps(self.params())
         info = create_rssi_reading_view(req)
         self.assertEqual(info, {'badge_id': 'badge_0',
+                                'badge_strength': -70,
                                 'pi_id': 'pi_0',
                                 'beacon_1_id': 'c',
                                 'beacon_2_id': 'e',
@@ -83,6 +87,7 @@ class TestRssiReadingsView(BaseTest):
         req.body = json.dumps(params)
         info = create_rssi_reading_view(req)
         self.assertEqual(info, {'badge_id': 'badge_0',
+                                'badge_strength': -70,
                                 'pi_id': 'pi_0',
                                 'beacon_1_id': 'b',
                                 'beacon_2_id': 'd',

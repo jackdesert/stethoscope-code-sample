@@ -22,6 +22,7 @@ class TestRssiReadingDuplicate(BaseTest):
         from stethoscope.models.rssi_reading import RssiReading
 
         reading = RssiReading(badge_id='a',
+                              badge_strength=-70,
                               pi_id='b',
                               beacon_1_id='x',
                               beacon_2_id='y',
@@ -32,16 +33,25 @@ class TestRssiReadingDuplicate(BaseTest):
 
         return reading
 
+    def test_valid(self):
+        rr = self.reading()
+        self.assertTrue(rr.valid)
+
     def test_valid_no_beacon_1_strength(self):
         rr = self.reading()
         rr.beacon_1_strength = None
         self.assertFalse(rr.valid)
 
-    def test_once(self):
+    def test_valid_no_badge_strength(self):
+        rr = self.reading()
+        rr.badge_strength = None
+        self.assertFalse(rr.valid)
+
+    def test_duplicate(self):
         rr = self.reading()
         self.assertFalse(rr.duplicate)
 
-    def test_twice(self):
+    def test_duplicate_twice(self):
         rr = self.reading()
         self.assertFalse(rr.duplicate, 'first time expected to be unique')
         self.assertTrue(rr.duplicate, 'second time expected to be duplicate')
@@ -67,6 +77,12 @@ class TestRssiReadingDuplicate(BaseTest):
         rr = self.reading()
         self.assertFalse(rr.duplicate, 'first time expected to be unique')
 
+        rr.badge_id += '-'
+        self.assertFalse(rr.duplicate, 'expected unique del badge_id changed')
+
+        rr.badge_strength += 1
+        self.assertFalse(rr.duplicate, 'expected unique del badge_strength changed')
+
         rr.beacon_1_id += '-'
         self.assertFalse(rr.duplicate, 'expected unique del beacon_1_id changed')
 
@@ -76,6 +92,12 @@ class TestRssiReadingDuplicate(BaseTest):
         rr.beacon_3_id += '-'
         self.assertFalse(rr.duplicate, 'expected unique del beacon_3_id changed')
 
+        rr.beacon_4_id = 'BIP600'
+        self.assertFalse(rr.duplicate, 'expected unique del beacon_4_id changed')
+
+        rr.beacon_5_id = 'BIP600'
+        self.assertFalse(rr.duplicate, 'expected unique del beacon_5_id changed')
+
         rr.beacon_1_strength += 1
         self.assertFalse(rr.duplicate, 'expected unique del beacon_1_strength changed')
 
@@ -84,6 +106,12 @@ class TestRssiReadingDuplicate(BaseTest):
 
         rr.beacon_3_strength += 1
         self.assertFalse(rr.duplicate, 'expected unique del beacon_3_strength changed')
+
+        rr.beacon_4_strength = -100
+        self.assertFalse(rr.duplicate, 'expected unique del beacon_4_strength changed')
+
+        rr.beacon_5_strength = -100
+        self.assertFalse(rr.duplicate, 'expected unique del beacon_5_strength changed')
 
 
 
@@ -125,7 +153,7 @@ class TestRssiReadingValidation(BaseTest):
 
     def validReading(self):
         from stethoscope.models.rssi_reading import RssiReading
-        reading = RssiReading(badge_id='a', pi_id='b', beacon_1_id='c', beacon_1_strength=-20)
+        reading = RssiReading(badge_id='a', badge_strength=-60, pi_id='b', beacon_1_id='c', beacon_1_strength=-20)
         return reading
 
     def test_happy_path(self):
@@ -152,7 +180,7 @@ class TestRssiReadingLatestForBadge(BaseTest):
 
     def validReading(self):
         from stethoscope.models.rssi_reading import RssiReading
-        reading = RssiReading(badge_id='a', pi_id='b', beacon_1_id='c', beacon_1_strength=-20)
+        reading = RssiReading(badge_id='a', badge_strength=-65, pi_id='b', beacon_1_id='c', beacon_1_strength=-20)
         return reading
 
     def test_returns_latest_reading(self):

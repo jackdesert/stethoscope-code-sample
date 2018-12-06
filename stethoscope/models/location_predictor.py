@@ -46,6 +46,7 @@ class LocationPredictor:
         output['reading'] = dict(id                = self.reading.id,
                                  pi_id             = self.reading.pi_id,
                                  badge_id          = self.reading.badge_id,
+                                 badge_strength    = self.reading.badge_strength,
                                  beacons           = self.reading.beacons,
                                  vectorized        = [float(i) for i in self.reading_vectorized],
                                  timestamp         = str(self.reading.timestamp),
