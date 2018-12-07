@@ -89,5 +89,5 @@ class TestLocationPredictorView(BaseTest):
 
         info = location_view(req)
         self.assertEqual(409, req.response.status_code)
-        self.assertTrue('NoMatchingBeaconsError' in info['error'])
+        self.assertTrue('DisjointBeaconsError' in info['error'])
 

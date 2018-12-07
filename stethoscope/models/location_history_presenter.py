@@ -1,4 +1,4 @@
-from ..models.neural_network_helper import NoMatchingBeaconsError
+from ..models.neural_network_helper import DisjointBeaconsError
 from ..models.rssi_reading import RssiReading
 from ..models.training_run import TrainingRun
 from ..models.util import PrudentIterator
@@ -120,7 +120,7 @@ class LocationHistoryPresenter:
             error = None
             try:
                 location = predictor.location
-            except NoMatchingBeaconsError as ee:
+            except DisjointBeaconsError as ee:
                 error = 'NO MATCHING BEACONS'
 
             if reading.timestamp < self.last_approved_timestamp:

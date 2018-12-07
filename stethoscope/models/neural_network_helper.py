@@ -3,7 +3,7 @@ import numpy as np
 import pickle
 import ipdb
 
-class NoMatchingBeaconsError(Exception):
+class DisjointBeaconsError(Exception):
     '''
         If the beacons present in this RssiReading are disjoint from
         the beacons that were used to train the keras model,
@@ -17,7 +17,7 @@ class NoMatchingBeaconsError(Exception):
     # an RssiReading containing any beacons that were not present during training
     @property
     def __name__(self):
-        return 'NoMatchingBeaconsError'
+        return 'DisjointBeaconsError'
 
 
 class NeuralNetworkHelper:
@@ -44,7 +44,7 @@ class NeuralNetworkHelper:
 
         if np.unique(output).shape == (1,):
             msg = f'No Matching Beacons in RssiReading with id {rssi_reading.id} and beacons {rssi_reading.beacons}. This means that beacons used for training and beacons in this reading are disjoint.'
-            raise NoMatchingBeaconsError(msg)
+            raise DisjointBeaconsError(msg)
 
         output /= metadata.strength_range
 

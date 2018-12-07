@@ -11,7 +11,7 @@ from collections import namedtuple
 from stethoscope.test.base_test import BaseTest
 from stethoscope.models.rssi_reading import RssiReading
 from stethoscope.models.location_predictor import LocationPredictor
-from stethoscope.models.neural_network_helper import NoMatchingBeaconsError
+from stethoscope.models.neural_network_helper import DisjointBeaconsError
 
 # TODO Find a way to not have to paste this both here and in models/training_run.py
 KerasMetadata = namedtuple('KerasMetadata', ['room_ids', 'beacon_id_to_beacon_index', 'strength_range', 'min_strength'])
@@ -176,7 +176,7 @@ class TestLocationPredictor(BaseTest):
                                       keras_model = mock_model,
                                       keras_metadata = self.metadata())
 
-        with pytest.raises(NoMatchingBeaconsError):
+        with pytest.raises(DisjointBeaconsError):
             predictor.location
 
 

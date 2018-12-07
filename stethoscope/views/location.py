@@ -4,7 +4,7 @@ from ..models.util import bip_rooms
 from ..models.rssi_reading import RssiReading
 from ..models.neural_network import NeuralNetwork
 from ..models.neural_network_helper import NeuralNetworkHelper
-from ..models.neural_network_helper import NoMatchingBeaconsError
+from ..models.neural_network_helper import DisjointBeaconsError
 from ..models.location_predictor import LocationPredictor
 
 from collections import defaultdict
@@ -40,7 +40,7 @@ def location_view(request):
 
     try:
         output = predictor.location
-    except NoMatchingBeaconsError as ee:
+    except DisjointBeaconsError as ee:
         request.response.status_code = 409
         msg = ee.__repr__()
         output = dict(error=msg)
