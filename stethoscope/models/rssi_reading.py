@@ -64,8 +64,6 @@ class RssiReading(Base):
             errors.append('badge_strength missing')
         if not self.pi_id:
             errors.append('pi_id missing')
-        if self.beacon_1_strength == None:
-            errors.append(f'beacon_1_strength cannot be None')
         if self.beacon_1_strength == 0:
             errors.append(f'beacon_1_strength cannot be zero')
         self.errors = errors

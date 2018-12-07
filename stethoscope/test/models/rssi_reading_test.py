@@ -37,11 +37,6 @@ class TestRssiReadingDuplicate(BaseTest):
         rr = self.reading()
         self.assertTrue(rr.valid)
 
-    def test_valid_no_beacon_1_strength(self):
-        rr = self.reading()
-        rr.beacon_1_strength = None
-        self.assertFalse(rr.valid)
-
     def test_valid_no_badge_strength(self):
         rr = self.reading()
         rr.badge_strength = None
@@ -162,8 +157,17 @@ class TestRssiReadingValidation(BaseTest):
         reading = RssiReading(badge_id='a', badge_strength=-60, pi_id='b', beacon_1_id='c', beacon_1_strength=-20)
         return reading
 
+    def validReadingNoBeacons(self):
+        from stethoscope.models.rssi_reading import RssiReading
+        reading = RssiReading(badge_id='a', badge_strength=-60, pi_id='b')
+        return reading
+
     def test_happy_path(self):
         rr = self.validReading()
+        self.assertTrue(rr.valid)
+
+    def test_happy_path_no_beacons(self):
+        rr = self.validReadingNoBeacons()
         self.assertTrue(rr.valid)
 
     def test_fails_del_no_badge_id(self):

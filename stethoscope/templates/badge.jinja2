@@ -15,6 +15,7 @@
     <h2>Tech Notes</h2>
     <ol class='tech-notes'>
         <li>Reading: first_pi_id / first_pi_name are named "first" because any subsequent pi that sends the same data will be ignored.</li>
+        <li>Reading: num_readings_last_10_min---Assuming the badges are set to update location every 6 seconds, if all readings are received you will get 100 readings in ten minutes. If you lose some, you will get less.</li>
         <li>Smoothie: Readings arrive at left edge 7 seconds after ingestion</li>
         <li>Smoothie: Readings are smoothed with a Bezier curve for aesthetics</li>
         <li>Raw Location: updates every second and displays most recent RssiReading and its associated location.</li>
