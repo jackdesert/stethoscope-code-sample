@@ -51,6 +51,8 @@ class TrainingRun(Base):
 
 
     def rssi_readings(self, session, expected_complete):
+        # Note this omits RssiReadings that have no beacons
+
         # Raise exception if this TrainingRun is not in the
         # state you expect
         if not expected_complete == bool(self.end_timestamp):
@@ -58,7 +60,8 @@ class TrainingRun(Base):
 
         readings = session.query(RssiReading). \
                    filter(RssiReading.badge_id == self.badge_id). \
-                   filter(RssiReading.timestamp > self.start_timestamp)
+                   filter(RssiReading.timestamp > self.start_timestamp). \
+                   filter(RssiReading.beacon_1_strength.isnot(None))
 
         if expected_complete:
             readings = readings.filter(RssiReading.timestamp < self.end_timestamp)
@@ -140,10 +143,12 @@ class TrainingRun(Base):
 
     @classmethod
     def rssi_reading_ids_from_all_completed_training_runs(cls, session):
+        # Note this omits RssiReadings where no beacons present
         sql = '''SELECT rssi_readings.id FROM rssi_readings
                   JOIN training_runs
                     ON rssi_readings.badge_id = training_runs.badge_id
                   WHERE  training_runs.end_timestamp IS NOT NULL
+                    AND  rssi_readings.beacon_1_strength IS NOT NULL
                     AND  rssi_readings.timestamp BETWEEN
                                                         training_runs.start_timestamp
                                                         AND
