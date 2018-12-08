@@ -2,6 +2,9 @@ from datetime import datetime
 import requests
 import redis
 import ipdb
+import pdb
+from collections import defaultdict
+import operator
 
 def bip_rooms():
     # TODO If these rooms change under foot---what does that do to our keras model?
@@ -91,6 +94,35 @@ class PrudentIterator:
         self._index += 1
         return output
 
+
+class BiasedScorekeeper():
+    # This class tracks which key has been incremented the most
+    # It is biased in that it "trumped_keys" are always ranked lower
+    # than regular keys
+
+
+    def __init__(self, trumped_keys=set()):
+        if not isinstance(trumped_keys, set):
+            raise TypeError
+        self.data = defaultdict(int)
+        self.trumped_keys = trumped_keys
+
+    def increment(self, key):
+        self.data[key] += 1
+
+    def winner(self):
+        if not self.data:
+            return None
+
+        normal_keys = self.data.keys() - self.trumped_keys
+
+        # Remove trumped keys from self.data if any normal_keys present
+        if normal_keys:
+            keys_to_delete = self.trumped_keys.intersection(self.data.keys())
+            for key in keys_to_delete:
+                del self.data[key]
+
+        return max(self.data.items(), key=operator.itemgetter(1))[0]
 
 
 

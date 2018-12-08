@@ -3,12 +3,12 @@ from ..models.neural_network_helper import NoBeaconsError
 from ..models.rssi_reading import RssiReading
 from ..models.training_run import TrainingRun
 from ..models.util import PrudentIterator
+from ..models.util import BiasedScorekeeper
 from collections import defaultdict
 from datetime import datetime
 from datetime import timedelta
 import ipdb
 import pdb
-import operator
 
 
 
@@ -26,6 +26,12 @@ class LocationHistoryPresenter:
 
     SECONDS_PER_DAY = 86400
     PERIOD_END_TEXT = 'Period End'
+
+    NO_BEACONS          = 'NO BEACONS'
+    DISJOINT_BEACONS    = 'DISJOINT BEACONS'
+    READING_PREDATES_TR = 'READING PREDATES TR'
+
+    TRUMPED_KEYS = {NO_BEACONS, DISJOINT_BEACONS, READING_PREDATES_TR}
 
     # Pass in keras_model and keras_metadata when running tests
     def __init__(self, session,
@@ -75,7 +81,6 @@ class LocationHistoryPresenter:
         last_timestamp = self.start_timestamp
         delta = timedelta(seconds=self.grain)
         next_timestamp = last_timestamp + delta
-        scorekeeper = defaultdict(int)
 
         num_periods = self.SECONDS_PER_DAY // self.grain
 
@@ -84,17 +89,15 @@ class LocationHistoryPresenter:
         di = PrudentIterator(self.data)
 
         for period in periods:
+            scorekeeper = BiasedScorekeeper(self.TRUMPED_KEYS)
+
             while di.available and (di.peek[0] < period + delta):
                 (timestamp, room) = di.next
-                scorekeeper[room] += 1
+                scorekeeper.increment(room)
 
-            if scorekeeper:
-                winning_room = max(scorekeeper.items(), key=operator.itemgetter(1))[0]
-                summary.append((period, winning_room))
-            else:
-                summary.append((period, None))
+            winning_room = scorekeeper.winner()
+            summary.append((period, winning_room))
 
-            scorekeeper.clear()
 
 
         period_end = (self.end_timestamp, self.PERIOD_END_TEXT)
@@ -122,12 +125,12 @@ class LocationHistoryPresenter:
             try:
                 location = predictor.location
             except NoBeaconsError:
-                error = 'NO BEACONS'
+                error = self.NO_BEACONS
             except DisjointBeaconsError:
-                error = 'DISJOINT BEACONS'
+                error = self.DISJOINT_BEACONS
 
             if reading.timestamp < self.last_approved_timestamp:
-                value = 'READING PREDATES TR'
+                value = self.READING_PREDATES_TR
             elif error:
                 value = error
             elif location.get('errors'):
