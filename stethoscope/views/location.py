@@ -4,6 +4,7 @@ from ..models.util import bip_rooms
 from ..models.rssi_reading import RssiReading
 from ..models.neural_network import NeuralNetwork
 from ..models.neural_network_helper import NeuralNetworkHelper
+from ..models.neural_network_helper import NoBeaconsError
 from ..models.neural_network_helper import DisjointBeaconsError
 from ..models.location_predictor import LocationPredictor
 
@@ -40,10 +41,10 @@ def location_view(request):
 
     try:
         output = predictor.location
-    except DisjointBeaconsError as ee:
+    except (NoBeaconsError, DisjointBeaconsError) as ee:
         request.response.status_code = 409
         msg = ee.__repr__()
-        output = dict(error=msg)
+        output = dict(error=msg, reading=reading.serializable_dict())
 
     if 'reading' in output:
         count = RssiReading.recent_count_for_badge(request.dbsession, badge_id, 600)

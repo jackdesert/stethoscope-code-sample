@@ -213,7 +213,7 @@ if __name__ == '__main__':
     if load:
         model = NeuralNetwork.saved_model()
         metadata = NeuralNetwork.saved_metadata()
-        pdb.set_trace()
+        ipdb.set_trace()
         a = 5
 
 

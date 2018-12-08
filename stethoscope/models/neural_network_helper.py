@@ -19,6 +19,14 @@ class DisjointBeaconsError(Exception):
     def __name__(self):
         return 'DisjointBeaconsError'
 
+class NoBeaconsError(Exception):
+    '''
+        If there are no beacons in the RssiReading
+    '''
+    @property
+    def __name__(self):
+        return 'NoBeaconsError'
+
 
 class NeuralNetworkHelper:
     @classmethod
@@ -29,6 +37,7 @@ class NeuralNetworkHelper:
                 metadata = pickle.load(f)
 
 
+        beacons_present = False
         imposter_beacons = set()
         bmap = metadata.beacon_id_to_beacon_index
         output = np.zeros(len(bmap))
@@ -36,11 +45,15 @@ class NeuralNetworkHelper:
             beacon_id = getattr(rssi_reading, f'beacon_{number}_id')
             beacon_strength = getattr(rssi_reading, f'beacon_{number}_strength')
             if beacon_id:
+                beacons_present = True
                 if beacon_id in metadata.beacon_id_to_beacon_index:
                     beacon_index = metadata.beacon_id_to_beacon_index[beacon_id]
                     output[beacon_index] = beacon_strength - metadata.min_strength
                 else:
                     imposter_beacons.add(beacon_id)
+
+        if not beacons_present:
+            raise NoBeaconsError('No beacons present in RssiReading')
 
         if np.unique(output).shape == (1,):
             msg = f'No Matching Beacons in RssiReading with id {rssi_reading.id} and beacons {rssi_reading.beacons}. This means that beacons used for training and beacons in this reading are disjoint.'

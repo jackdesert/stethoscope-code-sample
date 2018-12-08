@@ -47,8 +47,8 @@ class LocationPredictor:
         output['reading'] = dict(id                = self.reading.id,
                                  first_pi_id       = self.reading.pi_id,
                                  first_pi_name     = PiName.by_id(self.reading.pi_id),
+                                 first_pi_badge_strength    = self.reading.badge_strength,
                                  badge_id          = self.reading.badge_id,
-                                 badge_strength    = self.reading.badge_strength,
                                  # placeholder to preserver order (see view)
                                  num_readings_last_10_min = None,
                                  beacons           = self.reading.beacons,

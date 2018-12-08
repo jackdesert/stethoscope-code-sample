@@ -7,6 +7,7 @@ from sqlalchemy import (
     Text,
 )
 
+from stethoscope.models.util import PiName
 from collections import OrderedDict
 from datetime import datetime
 from datetime import timedelta
@@ -77,21 +78,39 @@ class RssiReading(Base):
         columns = self.__table__.columns.keys()
         return { k:v for k,v in self.__dict__.items() if k in columns }
 
-    def print(self):
-        print(f'id: {self.id}')
-        print(f'badge: {self.badge_id}')
-        print(f'badge_strength: {self.badge_strength}')
-        print(f'pi: {self.pi_id}')
-        print('beacons:')
-        print(f'  {self.beacon_1_id}: {self.beacon_1_strength}')
-        print(f'  {self.beacon_2_id}: {self.beacon_2_strength}')
-        print(f'  {self.beacon_3_id}: {self.beacon_3_strength}')
-        print(f'  {self.beacon_4_id}: {self.beacon_4_strength}')
-        print(f'  {self.beacon_5_id}: {self.beacon_5_strength}')
-        print(f'timestamp: {self.timestamp}')
-        print(f'opposite_badge: {self.opposite_badge_id}')
-        print(f'position: {self.position}')
-        print(f'motion:   {self.motion}')
+    def serializable_dict(self):
+        return dict(id = self.id,
+                    first_pi_id = self.pi_id,
+                    first_pi_name = PiName.by_id(self.pi_id),
+                    badge_id = self.badge_id,
+                    first_pi_badge_strength = self.badge_strength,
+                    beacons = self.beacons,
+                    timestamp = str(self.timestamp),
+                    opposite_badge = self.opposite_badge_id,
+                    position = self.position,
+                    motion = self.motion)
+
+    def print(self, return_value=False):
+        lines = [ f'id: {self.id}',
+                  f'badge: {self.badge_id}',
+                  f'badge_strength: {self.badge_strength}',
+                  f'pi: {self.pi_id}',
+                  'beacons:',
+                  f'  {self.beacon_1_id}: {self.beacon_1_strength}',
+                  f'  {self.beacon_2_id}: {self.beacon_2_strength}',
+                  f'  {self.beacon_3_id}: {self.beacon_3_strength}',
+                  f'  {self.beacon_4_id}: {self.beacon_4_strength}',
+                  f'  {self.beacon_5_id}: {self.beacon_5_strength}',
+                  f'timestamp: {self.timestamp}',
+                  f'opposite_badge: {self.opposite_badge_id}',
+                  f'position: {self.position}',
+                  f'motion:   {self.motion}',
+                ]
+        if return_value:
+            return lines
+        else:
+            for line in lines:
+                print(line)
 
     @property
     def duplicate(self):
