@@ -18,4 +18,6 @@ HISTORY
 2018-11-08 Upgraded from t2.nano to t3.medium (now two VCPUs and EBS-Optimized)
            Because the location endpoint was suffering.
 2018-11-09 Retrained keras model with Geary's training runs
+2018-12-18 08:51 PST Deployed "No Beacons vs No Data"
+
 

@@ -11,6 +11,10 @@ import ipdb
 import pdb
 
 
+class LocationHistoryFutureOffsetError(Exception):
+    '''If you specify an offset and a date_string,
+    and the date_string is in the future,
+    this error is raised'''
 
 class LocationHistoryPresenter:
 
@@ -39,13 +43,15 @@ class LocationHistoryPresenter:
                        badge_id,
                        algorithm=DEFAULT_ALGORITHM,
                        date_string=None,
+                       offset=None,
                        grain=DEFAULT_GRAIN,
                        return_value=DEFAULT_RETURN_VALUE):
         self.session = session
         self.predictor = location_predictor
         self.badge_id = badge_id
-        self._set_timestamps(date_string)
+        self._set_timestamps(date_string, offset, grain)
         self.grain = grain
+        self.offset = offset
         self.return_value = return_value
         self.algorithm = algorithm
         self.last_approved_timestamp = TrainingRun.last_approved_timestamp(session)
@@ -58,8 +64,15 @@ class LocationHistoryPresenter:
         self._fetch_rssi_readings()
         self._generate_data()
         self._summarize()
+
+        # offset is only used if grain also present
+        offset_to_display = self.offset
+        if offset_to_display and not self.grain:
+            offset_to_display = 'ignored because no grain supplied'
+
         metadata = dict(   algorithm = self.algorithm,
                                grain = self.grain,
+                              offset = offset_to_display,
                         return_value = self.return_value,
                         last_approved_training_run = str(self.last_approved_timestamp))
 
@@ -82,7 +95,9 @@ class LocationHistoryPresenter:
         delta = timedelta(seconds=self.grain)
         next_timestamp = last_timestamp + delta
 
-        num_periods = self.SECONDS_PER_DAY // self.grain
+        span = self.end_timestamp - self.start_timestamp
+        span_seconds = span.days * self.SECONDS_PER_DAY + span.seconds
+        num_periods = span_seconds // self.grain
 
         periods = [self.start_timestamp + delta * index for index in range(num_periods)]
 
@@ -154,11 +169,49 @@ class LocationHistoryPresenter:
                 .order_by(RssiReading.timestamp)
         self._rssi_readings = rr
 
-    def _set_timestamps(self, date_string):
+    def _set_timestamps(self, date_string, offset, grain):
         if not date_string:
             date_string = datetime.now().strftime(self.DATE_FORMAT)
 
+        # Default timestamps are for a full day
         self.start_timestamp = datetime.strptime(date_string, self.DATE_FORMAT)
         self.end_timestamp   = self.start_timestamp + timedelta(days=1)
+
+        if grain and (offset is not None):
+
+            # Set timestamps to only return specific periods from the day
+            # Note you MAY enter this block when offset is zero
+            seconds_since_midnight = (datetime.now() - self.start_timestamp).seconds
+            completed_periods_since_midnight = seconds_since_midnight // grain
+            completed_seconds_since_midnight = completed_periods_since_midnight * grain
+            end_delta = timedelta(seconds=completed_seconds_since_midnight)
+
+            if self.start_timestamp.date() == datetime.now().date():
+                # If fetching for the current day
+                self.end_timestamp = self.start_timestamp + end_delta
+            else:
+                # If fetching for any other day,
+                # end_timestamp remains at the end of the day (start of the next day)
+                pass
+
+
+            start_offset_seconds = grain * offset
+            if start_offset_seconds >= self.SECONDS_PER_DAY:
+                raise LocationHistoryFutureOffsetError('Offset is greater than 24 hours')
+            start_delta = timedelta(seconds=start_offset_seconds)
+
+
+            self.start_timestamp += start_delta
+
+            now = datetime.now()
+            if self.end_timestamp > now:
+                msg = 'Offset is present and period ends in the future. Check date_string.'
+                raise LocationHistoryFutureOffsetError(msg)
+            if self.start_timestamp > now:
+                msg = 'Offset is present and period starts in the future. Check offset * grain against current time, or simply try a smaller offset.'
+                raise LocationHistoryFutureOffsetError(msg)
+            if self.start_timestamp >= self.end_timestamp:
+                msg = f'Offset is present but start {self.end_timestamp} is either equal to or later than end {self.start_timestamp}. Check offset * grain against current time, or simply try a smaller offset.'
+                raise LocationHistoryFutureOffsetError(msg)
 
 

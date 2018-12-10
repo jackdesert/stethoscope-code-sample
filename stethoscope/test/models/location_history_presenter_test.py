@@ -1,10 +1,11 @@
 import pdb
+from freezegun import freeze_time
 from datetime import datetime
 from datetime import timedelta
 import pytest
 from stethoscope.test.base_test import BaseTest
 from stethoscope.models.location_history_presenter import LocationHistoryPresenter
-
+from stethoscope.models.location_history_presenter import LocationHistoryFutureOffsetError
 
 class TestLocationHistoryPresenter(BaseTest):
 
@@ -23,6 +24,83 @@ class TestLocationHistoryPresenter(BaseTest):
     @property
     def time_format(self):
         return '%Y-%m-%d %H:%M:%S'
+
+
+    def test_set_timestamps_exception_raised(self):
+        exception_data = [
+            # GRAIN  OFFSET  DATE_STRING, TIME_FREEZE
+            # Offset * grain is more than SECONDS_PER_DAY
+            (3600,  24,     None, '2010-10-10 12:15:36'),
+            (3600,  25,     None, '2010-10-10 12:15:36'),
+
+            # Offset * grain puts start_timestamp in future
+            (3600,   1,     None, '2010-10-10 00:59:00'),
+
+            # Grain and offset present; date_string puts end_timestamp in the future
+            (3600, 0,  '2011-01-01', '2010-10-10 12:15:36'),
+            (3600, 23, '2011-01-01', '2010-10-10 12:15:36'),
+
+        ]
+        for index, (grain, offset, date_string, frozen) in enumerate(exception_data):
+            with freeze_time(frozen):
+                with pytest.raises(LocationHistoryFutureOffsetError):
+                    self.build_presenter(dict(grain=grain,
+                                              offset=offset,
+                                              date_string=date_string))
+                    print(f'index: {index}. Expected exception, but no')
+
+    def test_set_timestamps_happy_path(self):
+        # All scenarios where an exception will not be raised...put them in here
+
+        frozen = freeze_time('2010-10-10 12:15:36')
+        data = [
+            # GRAIN  OFFSET  DATE_STRING    EXPECTED_START         EXPECTED_END
+             (None,  None,   None,          '2010-10-10 00:00:00', '2010-10-11 00:00:00'),
+
+            # Setting date string to a date in the future raises an error.
+            # See other test
+
+            # Setting date string to a date in the past
+             (None,  None,   '2010-09-01',  '2010-09-01 00:00:00', '2010-09-02 00:00:00'),
+
+
+            # GRAIN  OFFSET  DATE_STRING    EXPECTED_START         EXPECTED_END
+            # Grain without offset returns full day
+             (3600,  None,   None,          '2010-10-10 00:00:00', '2010-10-11 00:00:00'),
+            # Offset without grain returns full day
+             (None,  2,      None,          '2010-10-10 00:00:00', '2010-10-11 00:00:00'),
+
+
+            # GRAIN  OFFSET  DATE_STRING    EXPECTED_START         EXPECTED_END
+            # Grain and offset returns only completed periods
+             (3600,  0,      None,          '2010-10-10 00:00:00', '2010-10-10 12:00:00'),
+             (3600,  1,      None,          '2010-10-10 01:00:00', '2010-10-10 12:00:00'),
+             (3600,  11,     None,          '2010-10-10 11:00:00', '2010-10-10 12:00:00'),
+
+            # GRAIN  OFFSET  DATE_STRING    EXPECTED_START         EXPECTED_END
+            # Grain and offset and date_string returns up to a full day if in the past
+             (3600,  0,      '2010-09-01',  '2010-09-01 00:00:00', '2010-09-02 00:00:00'),
+             (3600,  22,     '2010-09-01',  '2010-09-01 22:00:00', '2010-09-02 00:00:00'),
+        ]
+
+        for index, (grain, offset, date_string, expected_start, expected_end) in enumerate(data):
+            with frozen:
+                pr = self.build_presenter(dict(grain=grain,
+                                               offset=offset,
+                                               date_string=date_string))
+
+                expected_start_object = datetime.strptime(expected_start, self.time_format)
+                expected_end_object   = datetime.strptime(expected_end  , self.time_format)
+
+
+                self.assertEqual(pr.start_timestamp, expected_start_object, f'start: index {index}')
+                self.assertEqual(pr.end_timestamp, expected_end_object, f'end: index {index}')
+
+
+
+
+
+
 
     def test__summarize(self):
         presenter = self.build_presenter(dict(grain=3600))

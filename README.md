@@ -98,7 +98,7 @@ Getting Started (This step generated from cookiecutter)
 - Upgrade packaging tools [and specific packages]
 
     # If trouble installing tensorflow, omit "--upgrade" option
-    env/bin/pip install --upgrade pip ipdb setuptools redis markdown requests alembic numpy keras tensorflow psycopg2-binary
+    env/bin/pip install --upgrade pip ipdb setuptools redis markdown requests alembic numpy keras tensorflow psycopg2-binary freezegun
 
 - Install the project in editable mode with its testing requirements.
 

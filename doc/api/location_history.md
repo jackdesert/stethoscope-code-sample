@@ -16,6 +16,7 @@ Payload (POST only)
       'date'  : <string>,
       'algorithm' : <string>,
       'return_value' : <string>,
+      'offset': <integer>,
       'priors': [
                   [<room_id>, <weight>],
                   [<room_id>, <weight>],
@@ -28,6 +29,9 @@ Payload (POST only)
 * `date` is in the format 2018-12-29. If date is not specified, default is today's date.
 * `return_value` may be either "room_id" or "room_name"
 * `algorithm` may be either "raw" or "bayes"
+* If both `grain` and `offset` are present, and you are fetching data for the current day, it will start with the period you specify with "offset", and end with the last completed period. For example, if grain is 3600 and offset is 5 and date is NULL (default to current day) and the time is currently 07:30, the periods returned will be
+    [{start: 05:00, end: 06:00},
+     {start: 06:00, end: 07:00}]
 * `priors` means how many times more likely than the default value are they to be in that room.
 * `priors` is optional. That is, this endpoint may be called with no payload at all.
 * If `priors` are included, the default prior is 1.0. That means any trained rooms that are not explicitly listed in your priors will receive a value of 1.
