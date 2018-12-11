@@ -5,6 +5,7 @@ from pyramid.view import view_config
 from sqlalchemy import desc
 
 from ..models import RssiReading
+from ..models.util import BadgeTracker
 
 from datetime import datetime
 
@@ -54,5 +55,14 @@ def badge_fetch_timeseries(request):
 
 
     return packets
+
+
+@view_config(route_name='badge_strength',
+             renderer='json')
+def badge_strength_function(request):
+
+    badge_id = request.matchdict['id']
+
+    return BadgeTracker.recent_values(badge_id)
 
 

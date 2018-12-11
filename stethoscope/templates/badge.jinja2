@@ -11,6 +11,9 @@
     <h2>Raw Location</h2>
     <div id='location-list'></div>
 
+    <h2>{{ id }} Badge Strength History</h2>
+    <div id='strength-list'></div>
+
     <div class='space-4rem'></div>
     <h2>Tech Notes</h2>
     <ol class='tech-notes'>
@@ -28,6 +31,7 @@
 <script src="{{request.static_path('stethoscope:static/smoothie.js')}}"></script>
 <script src="{{request.static_path('stethoscope:static/badge__smoothie.js')}}"></script>
 <script src="{{request.static_path('stethoscope:static/badge__location.js')}}"></script>
+<script src="{{request.static_path('stethoscope:static/badge__strength.js')}}"></script>
 
 <script>
     window.onload = initiateBadgeSmoothie('{{ id }}',
@@ -35,6 +39,8 @@
                                            {{ max_id }})
 
     window.onload = initiateBadgeLocation('{{ id }}')
+
+    window.onload = initiateBadgeStrength('{{ id }}')
 
 </script>
 {% endblock content %}

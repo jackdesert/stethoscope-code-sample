@@ -14,6 +14,7 @@ def includeme(config):
     config.add_route('test', '/test')
     config.add_route('badge_show', '/badges/{id}', request_method='GET')
     config.add_route('badge_fetch', '/badges/{id}/fetch', request_method='GET')
+    config.add_route('badge_strength', '/badges/{id}/strength_history', request_method='GET')
     config.add_route('location', '/badges/{badge_id}/location')
     config.add_route('location_history', '/badges/{badge_id}/location_history')
     config.add_route('home', '/original_home')

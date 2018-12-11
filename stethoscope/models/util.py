@@ -16,14 +16,15 @@ def bip_rooms_hash():
     return { room_id: room_name for (room_id, room_name) in bip_rooms() }
 
 class PiName:
-    NAMES =  {'000000001351facb': 'Larch 2nd Floor (WITH TV)',
-              '0000000066c55ea2': 'Tabor 2nd Floor (WITH TV)',
-              '0000000088d14482': 'Larch/Tabor 2nd Floor Middle',
-              '00000000336e3945': 'Larch/Tabor 3rd Floor Middle',
-              '00000000f6ef3162': 'Larch 3rd Floor',
-              '00000000accba0fa': 'Tabor 3rd Floor',
-              '000000009dc13fc1': 'Tabor 3D (Suite)',
-              '000000007f5c3da0': 'Cascade Xerox',
+    NAMES =  {'000000001351facb': '10. Larch 2nd Floor (WITH TV)',
+              '0000000066c55ea2': '11. Tabor 2nd Floor (WITH TV)',
+              '0000000088d14482': '12. Larch/Tabor 2nd Floor Middle',
+              '00000000336e3945': '13. Larch/Tabor 3rd Floor Middle',
+              '00000000f6ef3162': '14. Larch 3rd Floor',
+              '00000000accba0fa': '15. Tabor 3rd Floor',
+              '000000009dc13fc1': '16. Tabor 3D (Suite)',
+              '000000007f5c3da0': '17. Cascade Xerox',
+              '2':                '18. Fake Pi',
              }
 
     @classmethod
@@ -69,6 +70,40 @@ class PiTracker:
         if keysOnly:
             return keys
         return sorted(cls.REDIS.mget(keys))
+
+class BadgeTracker:
+    REDIS = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
+    KEY_PREPEND = 'badge-strength-'
+    MAX_VALUES = 29
+
+    @classmethod
+    def key(cls, badge_id):
+        return f'{cls.KEY_PREPEND}{badge_id}'
+
+    @classmethod
+    def record(cls, badge_id, badge_strength, pi_id, duplicate=False):
+        key = cls.key(badge_id)
+        pi_name = PiName.by_id(pi_id)
+        duplicate = ' (duplicate) ' if duplicate else '             '
+        display_strength = str(badge_strength).rjust(4)
+        value = f'{datetime.now()}  {display_strength} {duplicate}  {pi_name}'
+
+        cls.REDIS.lpush(key, value)
+        cls.REDIS.ltrim(key, 0, cls.MAX_VALUES)
+
+    @classmethod
+    def recent_values(cls, badge_id):
+        key = cls.key(badge_id)
+        header_row = 'TIMESTAMP                    STRENGTH           PI          '
+
+        output = cls.REDIS.lrange(key, 0, cls.MAX_VALUES)
+
+        output.reverse()
+        output.append(header_row)
+        output.reverse()
+
+        return output
+
 
 
 class PrudentIterator:

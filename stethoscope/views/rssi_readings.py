@@ -5,6 +5,7 @@ from sqlalchemy.exc import DBAPIError
 from sqlalchemy import desc
 
 from ..models.util import PiTracker
+from ..models.util import BadgeTracker
 from ..models import RssiReading
 from ..models import TrainingRun
 
@@ -43,13 +44,16 @@ def create_rssi_reading_view(request):
         request.response.status_code = 400
         return dict(errors='JSONDecodeError', payload_received=request.body.decode())
 
-    track_pi(params)
     reading = RssiReading(**rssi_reading_params(params))
+
+    duplicate = reading.duplicate
+    track_badge(params, duplicate)
+    track_pi(params)
 
     if reading.invalid:
         request.response.status_code = 400
         return dict(errors=reading.errors)
-    elif reading.duplicate:
+    elif duplicate:
         request.response.status_code = 409
         return dict(errors=['duplicate'])
     else:
@@ -82,6 +86,12 @@ def track_pi(params):
     pi_id = params.get('pi_id')
     ip_address = params.get('ip_address')
     PiTracker.record(pi_id, ip_address)
+
+def track_badge(params, duplicate):
+    badge_id = params.get('badge_id')
+    pi_id = params.get('pi_id')
+    badge_strength = params.get('badge_strength')
+    BadgeTracker.record(badge_id, badge_strength, pi_id, duplicate)
 
 
 
