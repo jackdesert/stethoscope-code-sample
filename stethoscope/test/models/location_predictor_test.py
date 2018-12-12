@@ -83,6 +83,7 @@ class TestLocationPredictor(BaseTest):
                             'first_pi_id': 'b',
                             'first_pi_name': 'b',
                             'badge_id': 'a',
+                            'num_readings_last_2_min': None,
                             'num_readings_last_10_min': None,
                             'first_pi_badge_strength': -70,
                             'beacons': [('x', 10), ('y', 20), ('z', 30)],

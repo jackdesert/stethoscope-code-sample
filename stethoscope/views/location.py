@@ -47,8 +47,10 @@ def location_view(request):
         output = dict(error=msg, reading=reading.serializable_dict())
 
     if 'reading' in output:
-        count = RssiReading.recent_count_for_badge(request.dbsession, badge_id, 600)
-        output['reading']['num_readings_last_10_min'] = count
+        count_120 = RssiReading.recent_count_for_badge(request.dbsession, badge_id, 120)
+        count_600 = RssiReading.recent_count_for_badge(request.dbsession, badge_id, 600)
+        output['reading']['num_readings_last_2_min'] = count_120
+        output['reading']['num_readings_last_10_min'] = count_600
 
     return output
 

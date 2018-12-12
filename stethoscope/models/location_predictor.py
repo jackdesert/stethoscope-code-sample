@@ -50,6 +50,7 @@ class LocationPredictor:
                                  first_pi_badge_strength    = self.reading.badge_strength,
                                  badge_id          = self.reading.badge_id,
                                  # placeholder to preserver order (see view)
+                                 num_readings_last_2_min = None,
                                  num_readings_last_10_min = None,
                                  beacons           = self.reading.beacons,
                                  vectorized        = [float(i) for i in self.reading_vectorized],
